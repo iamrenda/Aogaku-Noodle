@@ -5,17 +5,15 @@ function CourseCard({ course }) {
 
     return (
         <a className="course-card" href={course?.link || "#"} target="_blank" rel="noopener noreferrer">
-            <div className="course-card__top">
-                <span className="course-card__badge">{periodLabel}</span>
-            </div>
+            {course?.day === 7 || (
+                <div className="course-card__top">
+                    <span className="course-card__badge">{periodLabel}</span>
+                </div>
+            )}
 
             <h4 className="course-card__title">{title}</h4>
 
-            {subtitle ? (
-                <p className="course-card__subtitle">{subtitle}</p>
-            ) : (
-                <p className="course-card__meta">詳細は授業ページを開いて確認</p>
-            )}
+            {subtitle && <p className="course-card__subtitle">{subtitle}</p>}
         </a>
     );
 }

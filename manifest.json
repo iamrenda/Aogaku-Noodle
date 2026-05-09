@@ -1,0 +1,23 @@
+{
+    "manifest_version": 3,
+    "name": "青学Noodle",
+    "version": "1.4",
+    "description": "青山学院大学LMS「Moodle」のChrome 拡張機能\nCreated by iamrenda",
+    "permissions": ["scripting", "sidePanel", "storage"],
+    "action": {},
+    "side_panel": {
+        "default_path": "sidepanel.html"
+    },
+    "background": {
+        "service_worker": "dist/background.js",
+        "type": "module"
+    },
+    "icons": { "32": "icons/icon_32.png", "128": "icons/icon_128.png" },
+    "content_scripts": [
+        {
+            "matches": ["https://agulms45.aim.aoyama.ac.jp/*"],
+            "js": ["dist/content.js"],
+            "css": ["dist/content.css"]
+        }
+    ]
+}

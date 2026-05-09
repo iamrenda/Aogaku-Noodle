@@ -1,0 +1,32 @@
+function updateBadge(assignments) {
+    if (!assignments || !Array.isArray(assignments)) {
+        chrome.action.setBadgeText({ text: "" });
+        return;
+    }
+    const urgentCount = assignments.filter((assignment) => {
+        return assignment.timestamp && assignment.timestamp * 1000 - Date.now() < 3 * 24 * 60 * 60 * 1000;
+    }).length;
+
+    if (urgentCount > 0) {
+        chrome.action.setBadgeText({ text: urgentCount.toString() });
+        chrome.action.setBadgeBackgroundColor({ color: "#ef4444" });
+    } else {
+        chrome.action.setBadgeText({ text: "" });
+    }
+}
+
+// Initial update on startup
+chrome.storage.local.get("assignments", (result) => {
+    updateBadge(result.assignments);
+});
+
+// Listen for storage updates
+chrome.storage.onChanged.addListener((changes, namespace) => {
+    if (namespace === "local" && changes.assignments) {
+        updateBadge(changes.assignments.newValue);
+    }
+});
+
+chrome.action.onClicked.addListener((tab) => {
+    chrome.sidePanel.open({ windowId: tab.windowId });
+});

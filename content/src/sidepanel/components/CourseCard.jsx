@@ -1,6 +1,10 @@
 /* global chrome */
 
 function CourseCard({ course, dayIndex, index }) {
+    const title = course.trimmedTitle || course.fullTitle;
+    const subtitle = course.subtitle;
+    const periodLabel = course.period ? `${course.period}限` : "オンデマ";
+
     return (
         <a
             onClick={async (e) => {
@@ -21,16 +25,17 @@ function CourseCard({ course, dayIndex, index }) {
             className="course-card"
             style={{ animationDelay: `${(dayIndex * 5 + index) * 0.05}s` }}
         >
-            {course.period !== null && (
-                <div className="card-header">
-                    <span className="type-badge badge-course">{course.period ? `${course.period}限` : "オンデマ"}</span>
+            {course.day !== 7 && (
+                <div className="course-card__top">
+                    <span className="course-card__badge">{periodLabel}</span>
                 </div>
-            )}
-            <h3 style={{ marginTop: course.period ? "0" : "0.5rem" }}>{course.trimmedTitle || course.fullTitle}</h3>
-            {course.subtitle && (
-                <div className="card-footer">
-                    <div className="due-date">{course.subtitle}</div>
-                </div>
+                )
+            }
+
+            <h4 className="course-card__title">{title}</h4>
+
+            {subtitle && (
+                <p className="course-card__subtitle">{subtitle}</p>
             )}
         </a>
     );

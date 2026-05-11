@@ -16,6 +16,20 @@ build({
     outfile: "dist/content.js",
 });
 
+// grade page content script
+build({
+    ...uiConfig,
+    entryPoints: ["content/scripts/grade-viewer/index.js"],
+    outfile: "dist/grade-page.js",
+});
+
+// grade viewer window
+build({
+    ...uiConfig,
+    entryPoints: ["content/src/grade-viewer/main.jsx"],
+    outfile: "dist/grade-viewer.js",
+});
+
 // sidepanel
 build({
     ...uiConfig,

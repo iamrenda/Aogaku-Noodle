@@ -1,0 +1,353 @@
+:root {
+    color-scheme: light;
+    --gv-bg: #f6f7fb;
+    --gv-surface: rgba(255, 255, 255, 0.86);
+    --gv-card: #ffffff;
+    --gv-text: #0f172a;
+    --gv-muted: #64748b;
+    --gv-border: rgba(148, 163, 184, 0.22);
+    --gv-primary: #2e6df6;
+    --gv-primary-dark: #245ce0;
+    --gv-secondary: #eff3f8;
+    --gv-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(46, 109, 246, 0.12), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.08), transparent 28%),
+        var(--gv-bg);
+    color: var(--gv-text);
+}
+
+.grade-viewer-screen {
+    min-height: 100vh;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.grade-viewer-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem 1.1rem;
+    border-radius: 1.5rem;
+    background: var(--gv-surface);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: var(--gv-shadow);
+    border: 1px solid var(--gv-border);
+}
+
+.grade-viewer-header--detail {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.grade-viewer-kicker {
+    margin: 0;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gv-primary);
+}
+
+.grade-viewer-title {
+    margin: 0.2rem 0 0;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    line-height: 1.1;
+}
+
+.grade-viewer-subtitle {
+    margin: 0;
+    color: var(--gv-muted);
+    font-size: 0.95rem;
+}
+
+.grade-viewer-filter,
+.grade-selection-grid,
+.grade-flip-grid {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.grade-viewer-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+}
+
+.grade-viewer-filter-button {
+    border: 1px solid var(--gv-border);
+    background: var(--gv-surface);
+    color: var(--gv-text);
+    border-radius: 999px;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+}
+
+.grade-viewer-filter-button:hover {
+    transform: translateY(-1px);
+}
+
+.grade-viewer-filter-button.is-active {
+    background: var(--gv-primary);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+.grade-selection-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.95rem;
+    align-content: start;
+}
+
+.grade-selection-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    min-height: 168px;
+    padding: 1rem;
+    border: 1px solid var(--gv-border);
+    border-radius: 1.35rem;
+    background: var(--gv-card);
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.grade-selection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 22px 40px rgba(15, 23, 42, 0.12);
+}
+
+.grade-selection-card__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.grade-selection-card__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.grade-selection-card__subject {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.grade-selection-card__lecturer,
+.grade-selection-card__details {
+    margin: 0;
+    color: var(--gv-muted);
+    font-size: 0.9rem;
+}
+
+.grade-selection-card__checkbox {
+    width: 1.15rem;
+    height: 1.15rem;
+    accent-color: var(--gv-primary);
+    margin-top: 0.15rem;
+}
+
+.grade-selection-card__details {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 0.15rem;
+}
+
+.grade-selection-card__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.65rem;
+    border-radius: 999px;
+    background: var(--gv-secondary);
+    color: #334155;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.grade-viewer-footer {
+    position: sticky;
+    bottom: 0;
+    padding: 0.75rem 0 0.25rem;
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(180deg, rgba(246, 247, 251, 0), rgba(246, 247, 251, 0.9) 35%, rgba(246, 247, 251, 1));
+}
+
+.grade-viewer-confirm-button,
+.grade-viewer-back-button {
+    border: 0;
+    border-radius: 999px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.grade-viewer-confirm-button {
+    min-width: 220px;
+    padding: 0.95rem 1.25rem;
+    color: #ffffff;
+    background: linear-gradient(180deg, var(--gv-primary) 0%, var(--gv-primary-dark) 100%);
+    box-shadow: 0 16px 30px rgba(46, 109, 246, 0.24);
+}
+
+.grade-viewer-back-button {
+    padding: 0.72rem 1rem;
+    background: var(--gv-secondary);
+    color: var(--gv-text);
+}
+
+.grade-viewer-confirm-button:hover,
+.grade-viewer-back-button:hover {
+    transform: translateY(-1px);
+}
+
+.grade-viewer-empty {
+    padding: 1.1rem;
+    border-radius: 1.1rem;
+    background: var(--gv-surface);
+    border: 1px dashed var(--gv-border);
+    color: var(--gv-muted);
+    text-align: center;
+}
+
+.grade-viewer-empty--detail {
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.grade-flip-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    align-content: start;
+}
+
+.grade-flip-card {
+    position: relative;
+    perspective: 1400px;
+    min-height: 220px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.grade-flip-card__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+    transform-style: preserve-3d;
+    transition: transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.grade-flip-card.is-flipped .grade-flip-card__inner {
+    transform: rotateY(180deg);
+}
+
+.grade-flip-card__face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1rem;
+    border-radius: 1.35rem;
+    border: 1px solid var(--gv-border);
+    background: var(--gv-card);
+    box-shadow: 0 18px 38px rgba(15, 23, 42, 0.1);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.grade-flip-card__face--back {
+    transform: rotateY(180deg);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.grade-flip-card__subject {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.grade-flip-card__lecturer {
+    margin: 0;
+    color: var(--gv-muted);
+}
+
+.grade-flip-card__hint {
+    margin: auto 0 0;
+    color: var(--gv-muted);
+    font-size: 0.85rem;
+}
+
+.grade-flip-card__grade-label {
+    margin: 0;
+    color: var(--gv-muted);
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.grade-flip-card__grade {
+    margin: 0;
+    font-size: clamp(2rem, 8vw, 3rem);
+    font-weight: 900;
+}
+
+.grade-flip-card__meta {
+    color: var(--gv-muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .grade-viewer-screen {
+        padding: 0.9rem;
+    }
+
+    .grade-viewer-header--detail {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .grade-viewer-confirm-button {
+        width: 100%;
+    }
+}

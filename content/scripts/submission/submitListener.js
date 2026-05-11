@@ -1,3 +1,5 @@
+/* global chrome */
+
 import { SUBMISSION_PENDING_KEY } from "./constants.js";
 import { loadSubmissionStyles } from "./styles.js";
 import { createToast } from "./toast.js";

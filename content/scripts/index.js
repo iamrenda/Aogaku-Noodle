@@ -1,3 +1,5 @@
+/* global chrome */
+
 import loadAssignmentsFromIframe from "./util/loadAssignmentsFromIframe";
 import { bootstrapSubmissionFlow } from "./submission/submitListener.js";
 

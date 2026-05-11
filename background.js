@@ -1,3 +1,5 @@
+/* global chrome */
+
 function updateBadge(assignments) {
     if (!assignments || !Array.isArray(assignments)) {
         chrome.action.setBadgeText({ text: "" });
@@ -29,4 +31,34 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 
 chrome.action.onClicked.addListener((tab) => {
     chrome.sidePanel.open({ windowId: tab.windowId });
+});
+
+chrome.runtime.onMessage.addListener((message, sender) => {
+    if (message?.type !== "OPEN_GRADE_VIEWER") {
+        return;
+    }
+
+    const grades = Array.isArray(message.grades) ? message.grades : [];
+
+    chrome.storage.local.set(
+        {
+            gradeViewerData: grades,
+            gradeViewerSourceUrl: sender?.tab?.url || message.sourceUrl || "",
+            gradeViewerOpenedAt: Date.now(),
+        },
+        () => {
+            chrome.windows.create(
+                {
+                    url: chrome.runtime.getURL("grade-viewer.html"),
+                    type: "popup",
+                    width: 1120,
+                    height: 840,
+                    focused: true,
+                },
+                () => {
+                    void chrome.runtime.lastError;
+                },
+            );
+        },
+    );
 });

@@ -112,7 +112,7 @@ body {
     cursor: pointer;
 }
 
-.card-header {
+.card--header {
     background-color: "red";
     display: flex;
     justify-content: space-between;
@@ -168,7 +168,7 @@ body {
     overflow: hidden;
 }
 
-.card-footer {
+.card--footer {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -217,17 +217,22 @@ body {
     display: flex;
     flex-direction: column;
     background-color: var(--bg-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border-color);
     border-radius: 1rem;
     padding: 1.25rem;
     text-decoration: none;
     color: inherit;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition:
+        transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+        background-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: var(--shadow-sm);
     animation: slideUpFade 0.6s ease-out forwards;
     opacity: 0;
+    outline: 1px solid transparent;
+    backface-visibility: hidden;
+    will-change: transform;
 }
 
 .course-card:hover {

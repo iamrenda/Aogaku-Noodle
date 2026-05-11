@@ -1,5 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { LMSRedesignerApp } from "./App";
+import { QuickAccessApp } from "./QuickAccessApp";
 import { DISPLAY_COUNT, INJECT_TO } from "../scripts/const/classNames";
 import getClassesName from "../scripts/util/getClassesName";
 import setDisplayAll from "../scripts/util/setDisplayAll";
@@ -69,3 +70,26 @@ waitForElement(CONTAINER_CLASS, "my-redesign-root", async () => {
     // Pass courses as props to the app
     root.render(<LMSRedesignerApp />);
 });
+
+// Home Page Injection for Quick Access Section
+function injectQuickAccess() {
+    const url = window.location.href;
+    const isHomePage =
+        url.includes("redirect=0") || window.location.pathname === "/" || url === "https://agulms45.aim.aoyama.ac.jp/";
+
+    if (!isHomePage) return;
+
+    waitForElement("#site-news-forum", "quick-access-root", (el) => {
+        if (document.getElementById("quick-access-root")) return;
+
+        const rootElement = document.createElement("div");
+        rootElement.id = "quick-access-root";
+
+        // Insert right before the site news forum
+        el.insertAdjacentElement("beforebegin", rootElement);
+
+        const root = createRoot(rootElement);
+        root.render(<QuickAccessApp />);
+    });
+}
+injectQuickAccess();

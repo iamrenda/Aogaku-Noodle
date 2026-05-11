@@ -23,20 +23,17 @@ function CourseCard({ course, dayIndex, index }) {
                 });
             }}
             className="course-card"
-            style={{ animationDelay: `${(dayIndex * 5 + index) * 0.05}s` }}
+            style={{ animationDelay: `${(dayIndex * 5 + index) * 0.025}s` }}
         >
             {course.day !== 7 && (
                 <div className="course-card__top">
                     <span className="course-card__badge">{periodLabel}</span>
                 </div>
-                )
-            }
+            )}
 
             <h4 className="course-card__title">{title}</h4>
 
-            {subtitle && (
-                <p className="course-card__subtitle">{subtitle}</p>
-            )}
+            {subtitle && <p className="course-card__subtitle">{subtitle}</p>}
         </a>
     );
 }

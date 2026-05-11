@@ -6,13 +6,9 @@ import GradeSelectionCard from "./components/GradeSelectionCard";
 import GradeFlipCard from "./components/GradeFlipCard";
 
 function getDistinctYears(grades) {
-    return Array.from(
-        new Set(
-            grades
-                .map((grade) => grade.year?.trim())
-                .filter(Boolean),
-        ),
-    ).sort((left, right) => left.localeCompare(right, "ja", { numeric: true }));
+    return Array.from(new Set(grades.map((grade) => grade.year?.trim()).filter(Boolean))).sort((left, right) =>
+        left.localeCompare(right, "ja", { numeric: true }),
+    );
 }
 
 function GradeSelectionScreen({ grades, onConfirm }) {

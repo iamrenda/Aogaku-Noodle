@@ -38,11 +38,10 @@ function createButton(label, variant, onClick) {
 
 function positionOverlay(root, container) {
     const rect = container.getBoundingClientRect();
-    const scrollX = window.scrollX || window.pageXOffset || 0;
-    const scrollY = window.scrollY || window.pageYOffset || 0;
 
-    root.style.left = `${rect.left + scrollX}px`;
-    root.style.top = `${rect.top + scrollY}px`;
+    root.style.position = "fixed";
+    root.style.left = `${rect.left}px`;
+    root.style.top = `${rect.top}px`;
     root.style.width = `${rect.width}px`;
     root.style.height = `${rect.height}px`;
 }
@@ -81,13 +80,19 @@ function initGradeViewerOverlay({ scrapeGradeRows }) {
         status.className = "agu-grade-overlay-status";
 
         const updateStatus = () => {
-            status.textContent = grades.length > 0 ? `成績データを ${grades.length} 件読み込みました。` : "成績データを取得できませんでした。";
+            status.textContent =
+                grades.length > 0
+                    ? `成績データを ${grades.length} 件読み込みました。`
+                    : "成績データを取得できませんでした。";
         };
 
         const refreshGrades = () => {
             const nextGrades = scrapeGradeRows(document);
 
-            if (nextGrades.length !== grades.length || nextGrades.some((grade, index) => JSON.stringify(grade) !== JSON.stringify(grades[index]))) {
+            if (
+                nextGrades.length !== grades.length ||
+                nextGrades.some((grade, index) => JSON.stringify(grade) !== JSON.stringify(grades[index]))
+            ) {
                 grades = nextGrades;
                 updateStatus();
             }
@@ -118,20 +123,20 @@ function initGradeViewerOverlay({ scrapeGradeRows }) {
                     grades,
                     sourceUrl: window.location.href,
                 });
-                status.textContent = grades.length > 0 ? "成績ビューアを開いています。" : "データが不完全でもビューアを開きます。";
+                status.textContent =
+                    grades.length > 0 ? "成績ビューアを開いています。" : "データが不完全でもビューアを開きます。";
             } catch (error) {
                 console.warn("Failed to open grade viewer:", error);
                 status.textContent = "成績ビューアを開けませんでした。";
             }
         });
 
-        actions.append(revealButton, viewerButton);
+        actions.append(viewerButton, revealButton);
         card.append(title, status, actions);
         panel.append(card);
         root.append(panel);
 
-        const parent = container.parentElement || document.body;
-        parent.appendChild(root);
+        document.body.appendChild(root);
 
         syncPosition();
 

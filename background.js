@@ -33,7 +33,7 @@ chrome.action.onClicked.addListener((tab) => {
     chrome.sidePanel.open({ windowId: tab.windowId });
 });
 
-chrome.runtime.onMessage.addListener((message, sender) => {
+chrome.runtime.onMessage.addListener((message) => {
     if (message?.type !== "OPEN_GRADE_VIEWER") {
         return;
     }
@@ -43,8 +43,6 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     chrome.storage.local.set(
         {
             gradeViewerData: grades,
-            gradeViewerSourceUrl: sender?.tab?.url || message.sourceUrl || "",
-            gradeViewerOpenedAt: Date.now(),
         },
         () => {
             chrome.windows.create(

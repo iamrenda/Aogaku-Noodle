@@ -1,9 +1,6 @@
 function YearFilter({ years, selectedYears, onChange }) {
-    const toggleYear = (year) => {
-        const next = selectedYears.includes(year)
-            ? selectedYears.filter((item) => item !== year)
-            : [...selectedYears, year];
-        onChange(next);
+    const selectYear = (year) => {
+        onChange([year]);
     };
 
     return (
@@ -19,8 +16,8 @@ function YearFilter({ years, selectedYears, onChange }) {
                 <button
                     key={year}
                     type="button"
-                    className={`grade-viewer-filter-button ${selectedYears.includes(year) ? "is-active" : ""}`}
-                    onClick={() => toggleYear(year)}
+                    className={`grade-viewer-filter-button ${selectedYears.length === 1 && selectedYears[0] === year ? "is-active" : ""}`}
+                    onClick={() => selectYear(year)}
                 >
                     {year}
                 </button>

@@ -60,7 +60,9 @@ export function SidePanelApp() {
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
             <main className="tab-content">
-                {activeTab === "assignments" && <Assignments assignments={assignments} loading={loading} lastUpdated={lastUpdated} />}
+                {activeTab === "assignments" && (
+                    <Assignments assignments={assignments} loading={loading} lastUpdated={lastUpdated} />
+                )}
                 {activeTab === "courses" && <Courses courses={courses} loading={loading} />}
                 {activeTab === "settings" && <Settings />}
             </main>

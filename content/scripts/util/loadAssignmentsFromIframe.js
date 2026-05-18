@@ -1,35 +1,59 @@
 import { ASSIGNMENTS_DISPLAY_METHOD } from "../const/classNames";
 import extractAssignments from "../extract/extractAssignments";
 
-function handleIframe(doc, iframe, resolve) {
-    // 👇 click "show all"
-    const item = doc.querySelector(ASSIGNMENTS_DISPLAY_METHOD);
-    item?.click();
+function waitForDomToSettle(doc, action, stableDelay = 300, timeoutMs = 5000) {
+    return new Promise((resolve) => {
+        let settledTimer;
+        let timeoutTimer;
+        let observer;
 
-    // 👇 wait for DOM update
-    let timeout;
+        const finish = () => {
+            observer?.disconnect();
+            clearTimeout(settledTimer);
+            clearTimeout(timeoutTimer);
+            resolve();
+        };
 
-    const observer = new MutationObserver(() => {
-        clearTimeout(timeout);
+        const scheduleFinish = () => {
+            clearTimeout(settledTimer);
+            settledTimer = setTimeout(finish, stableDelay);
+        };
 
-        timeout = setTimeout(() => {
-            const assignments = extractAssignments(doc);
+        observer = new MutationObserver(scheduleFinish);
 
-            if (assignments.length > 0) {
-                observer.disconnect();
+        observer.observe(doc.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+        });
 
-                // optional cleanup
-                iframe.remove();
+        action?.();
 
-                resolve(assignments);
-            }
-        }, 200);
+        timeoutTimer = setTimeout(finish, timeoutMs);
+        scheduleFinish();
     });
+}
 
-    observer.observe(doc.body, {
-        childList: true,
-        subtree: true,
-    });
+async function handleIframe(doc, iframe, resolve) {
+    const showAllBtn = doc.querySelector(ASSIGNMENTS_DISPLAY_METHOD);
+    if (showAllBtn) {
+        await waitForDomToSettle(doc, () => showAllBtn.click());
+    }
+
+    const moreEventsButton = doc.querySelector('[data-action="more-events"]');
+    if (moreEventsButton) {
+        await waitForDomToSettle(doc, () => moreEventsButton.click());
+    }
+
+    let assignments = extractAssignments(doc);
+
+    if (assignments.length === 0) {
+        await waitForDomToSettle(doc, null);
+        assignments = extractAssignments(doc);
+    }
+
+    // iframe.remove();
+    resolve(assignments);
 }
 
 function loadAssignmentsFromIframe() {

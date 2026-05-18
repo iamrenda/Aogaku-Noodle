@@ -81,6 +81,29 @@ body {
     flex: 1;
 }
 
+.last-updated {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-align: right;
+    margin-bottom: -0.5rem;
+}
+
+.reload-button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.reload-button:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
 .assignments-list {
     display: flex;
     flex-direction: column;

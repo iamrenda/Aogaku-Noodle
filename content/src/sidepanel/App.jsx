@@ -12,8 +12,31 @@ export function SidePanelApp() {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
+    const [isLmsActive, setIsLmsActive] = useState(false);
+
+    const triggerRefresh = () => {
+        chrome.tabs.query({ url: "https://agulms45.aim.aoyama.ac.jp/*" }, (tabs) => {
+            if (tabs.length > 0) {
+                chrome.tabs.sendMessage(tabs[0].id, { type: "REFRESH_ASSIGNMENTS" });
+            }
+        });
+    };
 
     useEffect(() => {
+        const checkActiveTab = async () => {
+            const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+            if (tabs.length > 0 && tabs[0].url?.startsWith("https://agulms45.aim.aoyama.ac.jp/")) {
+                setIsLmsActive(true);
+            } else {
+                setIsLmsActive(false);
+            }
+        };
+
+        checkActiveTab();
+
+        chrome.tabs.onActivated.addListener(checkActiveTab);
+        chrome.tabs.onUpdated.addListener(checkActiveTab);
+
         // Initial fetch
         chrome.storage.local.get(["assignments", "courses", "defaultTab", "lastUpdated"], (result) => {
             if (result.assignments) {
@@ -31,6 +54,13 @@ export function SidePanelApp() {
                 setLastUpdated(result.lastUpdated);
             }
             setLoading(false);
+        });
+
+        chrome.storage.session.get("hasRefreshedThisSession", (result) => {
+            if (!result.hasRefreshedThisSession) {
+                triggerRefresh();
+                chrome.storage.session.set({ hasRefreshedThisSession: true });
+            }
         });
 
         // Listen for updates from the content script
@@ -52,6 +82,8 @@ export function SidePanelApp() {
 
         return () => {
             chrome.storage.onChanged.removeListener(listener);
+            chrome.tabs.onActivated.removeListener(checkActiveTab);
+            chrome.tabs.onUpdated.removeListener(checkActiveTab);
         };
     }, []);
 
@@ -61,7 +93,7 @@ export function SidePanelApp() {
 
             <main className="tab-content">
                 {activeTab === "assignments" && (
-                    <Assignments assignments={assignments} loading={loading} lastUpdated={lastUpdated} />
+                    <Assignments assignments={assignments} loading={loading} lastUpdated={lastUpdated} onReload={triggerRefresh} canReload={isLmsActive} />
                 )}
                 {activeTab === "courses" && <Courses courses={courses} loading={loading} />}
                 {activeTab === "settings" && <Settings />}

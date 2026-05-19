@@ -34,7 +34,7 @@ function waitForDomToSettle(doc, action, stableDelay = 300, timeoutMs = 5000) {
     });
 }
 
-async function handleIframe(doc, iframe, resolve) {
+async function handleIframe(doc, iframe, resolve, reject) {
     const showAllBtn = doc.querySelector(ASSIGNMENTS_DISPLAY_METHOD);
     if (showAllBtn) {
         await waitForDomToSettle(doc, () => showAllBtn.click());
@@ -50,9 +50,14 @@ async function handleIframe(doc, iframe, resolve) {
     if (assignments.length === 0) {
         await waitForDomToSettle(doc, null);
         assignments = extractAssignments(doc);
+
+        if (assignments.length === 0) {
+            reject("No assignments found after waiting for DOM to settle");
+            return;
+        }
     }
 
-    // iframe.remove();
+    iframe.remove();
     resolve(assignments);
 }
 
@@ -73,7 +78,7 @@ function loadAssignmentsFromIframe() {
                     return;
                 }
 
-                handleIframe(doc, iframe, resolve);
+                handleIframe(doc, iframe, resolve, reject);
             } catch (err) {
                 reject(err);
             }

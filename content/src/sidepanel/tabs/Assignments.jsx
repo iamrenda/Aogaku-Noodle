@@ -4,16 +4,25 @@ import Loading from "../components/Loading";
 import AssignmentCard from "../components/AssignmentCard";
 import EmptyState from "../components/EmptyState";
 
-function Assignments({ loading, assignments, lastUpdated }) {
+function Assignments({ loading, assignments, lastUpdated, onReload, canReload, hideHeader }) {
     const [, setTick] = useState(0);
+    const [isReloading, setIsReloading] = useState(false);
 
     useEffect(() => {
+        setIsReloading(false); // Clear reloading state when data actually updates
         if (!lastUpdated) return;
         const timer = setInterval(() => {
             setTick((t) => t + 1);
         }, 30000); // Update every 30 seconds to be responsive
         return () => clearInterval(timer);
     }, [lastUpdated]);
+
+    const handleReload = () => {
+        setIsReloading(true);
+        onReload();
+        // Fallback in case content script fails or no tab is open
+        setTimeout(() => setIsReloading(false), 5000);
+    };
 
     const formattedLastUpdated = getTimeAgo(lastUpdated);
     const isLastUpdatedVisible = !loading && formattedLastUpdated;
@@ -28,7 +37,7 @@ function Assignments({ loading, assignments, lastUpdated }) {
 
     return (
         <div className="assignments-list">
-            {isLastUpdatedVisible && (
+            {isLastUpdatedVisible && !hideHeader && (
                 <div
                     className="last-updated"
                     style={{
@@ -36,9 +45,23 @@ function Assignments({ loading, assignments, lastUpdated }) {
                         color: "var(--text-secondary)",
                         textAlign: "right",
                         marginBottom: "-0.5rem",
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                        gap: "0.5rem",
                     }}
                 >
-                    最終更新: {formattedLastUpdated}
+                    <span>最終更新: {formattedLastUpdated}</span>
+                    {canReload && (
+                        <button 
+                            className={`reload-button ${isReloading ? 'loading' : ''}`} 
+                            onClick={handleReload}
+                            disabled={isReloading}
+                        >
+                            {isReloading && <span className="spinner-icon"></span>}
+                            {isReloading ? 'ローディング中...' : '更新する'}
+                        </button>
+                    )}
                 </div>
             )}
             {assignments.map((assignment, index) => (

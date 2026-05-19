@@ -3,14 +3,28 @@ import { useState, useEffect } from "react";
 import CourseCard from "./CourseCard";
 import Assignments from "./sidepanel/tabs/Assignments";
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
+import { refreshAssignments } from "../scripts/index.js";
+import getTimeAgo from "./sidepanel/util/getTimeAgo.js";
 
 export function QuickAccessApp() {
     const [todayCourses, setTodayCourses] = useState([]);
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [lastUpdated, setLastUpdated] = useState(null);
+    const [isReloading, setIsReloading] = useState(false);
+    const [, setTick] = useState(0);
 
     useEffect(() => {
-        chrome.storage.local.get(["courses", "assignments"], (result) => {
+        setIsReloading(false); // Clear reloading state when data actually updates
+        if (!lastUpdated) return;
+        const timer = setInterval(() => {
+            setTick((t) => t + 1);
+        }, 30000); // Update every 30 seconds to be responsive
+        return () => clearInterval(timer);
+    }, [lastUpdated]);
+
+    useEffect(() => {
+        chrome.storage.local.get(["courses", "assignments", "lastUpdated"], (result) => {
             if (result.courses) {
                 const today = new Date().getDay();
                 const grouped = groupCoursesByDay(result.courses);
@@ -20,6 +34,9 @@ export function QuickAccessApp() {
                 // sort by nearest deadline first
                 const sorted = [...result.assignments].sort((a, b) => a.timestamp - b.timestamp);
                 setAssignments(sorted);
+            }
+            if (result.lastUpdated) {
+                setLastUpdated(result.lastUpdated);
             }
             setLoading(false);
         });
@@ -35,6 +52,9 @@ export function QuickAccessApp() {
                     const sorted = [...(changes.assignments.newValue || [])].sort((a, b) => a.timestamp - b.timestamp);
                     setAssignments(sorted);
                 }
+                if (changes.lastUpdated) {
+                    setLastUpdated(changes.lastUpdated.newValue);
+                }
             }
         };
 
@@ -48,6 +68,12 @@ export function QuickAccessApp() {
     if (loading) {
         return null;
     }
+
+    const handleReload = () => {
+        setIsReloading(true);
+        refreshAssignments();
+        setTimeout(() => setIsReloading(false), 5000);
+    };
 
     return (
         <section className="quick-access" id="quick-access">
@@ -67,9 +93,35 @@ export function QuickAccessApp() {
             </div>
 
             <div className="quick-access__section">
-                <h3 className="quick-access__subtitle">直近の課題</h3>
+                <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "1rem" }}>
+                    <h3 className="quick-access__subtitle" style={{ margin: 0 }}>
+                        直近の課題
+                    </h3>
+                    {!loading && lastUpdated && (
+                        <div
+                            className="last-updated"
+                            style={{
+                                fontSize: "0.8rem",
+                                color: "var(--text-secondary)",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.5rem",
+                            }}
+                        >
+                            <button
+                                className={`reload-button ${isReloading ? "loading" : ""}`}
+                                onClick={handleReload}
+                                disabled={isReloading}
+                            >
+                                {isReloading && <span className="spinner-icon"></span>}
+                                {isReloading ? "ローディング中..." : "更新する"}
+                            </button>
+                            <span>最終更新: {getTimeAgo(lastUpdated)}</span>
+                        </div>
+                    )}
+                </div>
                 <div className="quick-access__list grid-layout">
-                    <Assignments assignments={assignments} loading={loading} />
+                    <Assignments assignments={assignments} loading={loading} hideHeader={true} />
                 </div>
             </div>
         </section>

@@ -24,27 +24,20 @@ function clearSubmissionPending() {
 }
 
 function isSubmissionButton(target) {
-    return Boolean(target && typeof target.closest === "function" && target.closest("#id_submitbutton"));
-}
-
-function getPageText() {
-    return `${document.body?.innerText || ""} ${document.title || ""}`.toLowerCase();
+    return Boolean(
+        target &&
+        typeof target.closest === "function" &&
+        (target.closest("#id_submitbutton") || target.closest('[data-action="save"]')),
+    );
 }
 
 function hasSubmissionSuccessSignals() {
-    const pageText = getPageText();
-    const successSignals = [
-        "submitted for grading",
-        "submission status",
-        "not graded",
-        "grading status",
-        "評定のために提出済み",
-        "提出ステータス",
-        "評定ステータス",
-        "未評定",
+    const successSignalLinks = [
+        "https://agulms45.aim.aoyama.ac.jp/mod/quiz/view.php",
+        "https://agulms45.aim.aoyama.ac.jp/mod/assign/view.php",
     ];
 
-    return successSignals.some((signal) => pageText.includes(signal));
+    return successSignalLinks.some((link) => location.href.startsWith(link));
 }
 
 function showSubmissionSuccessFeedback() {

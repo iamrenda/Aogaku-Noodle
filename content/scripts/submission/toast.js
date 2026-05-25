@@ -1,5 +1,13 @@
 import { SUBMISSION_TOAST_ID } from "./constants.js";
 
+const messages = [
+    "提出できました！よく頑張りました！",
+    "提出完了！本当にお疲れさま！",
+    "提出おめでとう！素晴らしい集中力だったよ！",
+    "よくやった！提出バッチリだよ！",
+    "67 (Six-Seven) 🤷",
+];
+
 export function createToast() {
     const existing = document.getElementById(SUBMISSION_TOAST_ID);
     if (existing) existing.remove();
@@ -10,7 +18,7 @@ export function createToast() {
     toast.setAttribute("aria-live", "polite");
     toast.innerHTML = `
         <span class="submission-toast__icon">✓</span>
-        <span>提出できました！よく頑張りました！</span>
+        <span>${messages[Math.floor(Math.random() * messages.length)]}</span>
     `;
 
     document.body.appendChild(toast);

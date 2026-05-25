@@ -65,7 +65,7 @@ body {
    LOADING & ERROR STATES
    ============================================================================ */
 
-.loading,
+/* .loading, */
 .error {
     background: white;
     border-radius: 12px;
@@ -77,7 +77,7 @@ body {
 }
 
 .loading {
-    font-size: 18px;
+    /* font-size: 18px; */
     color: #718096;
 }
 
@@ -131,9 +131,9 @@ body {
 .day-section__header {
     font-size: 22px;
     font-weight: 600;
-    color: #569973;
+    color: #1b9d6f;
     padding-bottom: 12px;
-    border-bottom: 3px solid #569973;
+    border-bottom: 3px solid #1b9d6f;
     display: inline-block;
 }
 
@@ -524,7 +524,7 @@ body {
 .quick-access .assignment-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    border-color: #569973;
+    border-color: #1b9d6f;
 }
 
 .quick-access .card--header {
@@ -592,7 +592,7 @@ body {
 .quick-access .days-left {
     font-size: 12px;
     font-weight: 700;
-    color: #569973;
+    color: #1b9d6f;
     background-color: #d1fae5;
     padding: 4px 8px;
     border-radius: 4px;
@@ -611,4 +611,47 @@ body {
 .quick-access .assignment-card.urgent .days-left {
     color: #b91c1c;
     background-color: #fecaca;
+}
+
+/* Reload Button */
+.reload-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background-color: #1b9d6f; /* Match --accent */
+    border: none;
+    border-radius: 0;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.reload-button:hover:not(:disabled) {
+    background-color: #457a5c; /* Match --accent-hover */
+    color: #ffffff;
+}
+
+.reload-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.reload-button .spinner-icon {
+    animation: spin 1s linear infinite;
+    width: 12px;
+    height: 12px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

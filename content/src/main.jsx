@@ -5,6 +5,7 @@ import { DISPLAY_COUNT, INJECT_TO } from "../scripts/const/classNames";
 import getClassesName from "../scripts/util/getClassesName";
 import setDisplayAll from "../scripts/util/setDisplayAll";
 import "../scripts/index.js";
+import { refreshAssignments } from "../scripts/index.js";
 
 /**
  * Wait for an element to appear in DOM
@@ -74,10 +75,11 @@ waitForElement(CONTAINER_CLASS, "my-redesign-root", async () => {
 // Home Page Injection for Quick Access Section
 function injectQuickAccess() {
     const url = window.location.href;
-    const isHomePage =
-        url.includes("redirect=0") || window.location.pathname === "/" || url === "https://agulms45.aim.aoyama.ac.jp/";
+    const isHomePage = url === "https://agulms45.aim.aoyama.ac.jp/?redirect=0";
 
     if (!isHomePage) return;
+
+    refreshAssignments();
 
     waitForElement("#site-news-forum", "quick-access-root", (el) => {
         if (document.getElementById("quick-access-root")) return;

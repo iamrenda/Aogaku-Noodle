@@ -5,16 +5,13 @@ import formatDate from "../util/formatDate";
 import { CiCalendarDate } from "react-icons/ci";
 
 function AssignmentCard({ assignment, index }) {
-    const daysLeft = getDaysLeft(assignment.timestamp);
-    const isUrgent =
-        assignment.timestamp &&
-        assignment.timestamp * 1000 - Date.now() < 3 * 24 * 60 * 60 * 1000 &&
-        assignment.timestamp * 1000 - Date.now() > 0;
+    const daysLeft = getDaysLeft(assignment.dueDate, assignment.isOverdue);
+    const isOverdue = assignment.isOverdue;
 
     const handleClick = async (e) => {
         e.preventDefault();
 
-        window.open(assignment.link, "_blank", "noopener");
+        window.open(assignment.url, "_blank", "noopener");
 
         chrome.storage.local.get(["autoClosePanel"], (result) => {
             if (result.autoClosePanel !== false) {
@@ -31,20 +28,20 @@ function AssignmentCard({ assignment, index }) {
         <a
             key={index}
             onClick={handleClick}
-            className={`assignment-card ${isUrgent ? "urgent" : ""}`}
+            className={`assignment-card ${isOverdue ? "urgent" : ""}`}
             style={{ animationDelay: `${index * 0.05}s` }}
         >
             <div className="card--header">
-                <span className={`type-badge ${assignment.type === "quiz" ? "badge-quiz" : "badge-assignment"}`}>
-                    {assignment.type === "quiz" ? "小テスト" : "レポート"}
+                <span className={`type-badge ${assignment.isAssignment ? "badge-assignment" : "badge-quiz"}`}>
+                    {assignment.isAssignment ? "レポート" : "小テスト"}
                 </span>
-                <span className="class-name">{assignment.className}</span>
+                <span className="class-name">{assignment.courseName}</span>
             </div>
-            <h3 className="assignment-title">{assignment.title}</h3>
+            <h3 className="assignment-title">{assignment.name}</h3>
             <div className="card--footer">
                 <div className="due-date">
                     <CiCalendarDate />
-                    {formatDate(assignment.date)} {assignment.time}
+                    {formatDate(assignment.dueDate)}
                 </div>
                 {daysLeft && <div className={`days-left ${daysLeft === "期限切れ" ? "expired" : ""}`}>{daysLeft}</div>}
             </div>

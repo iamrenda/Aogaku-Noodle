@@ -1,6 +1,6 @@
 /* global chrome */
 import { useState, useEffect } from "react";
-import CourseCard from "./CourseCard";
+import CourseCard from "./sidepanel/components/CourseCard";
 import Assignments from "./sidepanel/tabs/Assignments";
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
 import { refreshAssignments } from "../scripts/index.js";

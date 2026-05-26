@@ -2,8 +2,8 @@
 
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
 import DAY_NAMES from "../scripts/const/dayNames";
-import extractAllCourses from "../scripts/extract/extractAllCourses";
-import CourseCard from "./CourseCard";
+import fetchCourses from "../scripts/extract/fetchCourses";
+import CourseCard from "./sidepanel/components/CourseCard";
 import "./App.css";
 import { useState, useEffect } from "react";
 
@@ -43,22 +43,23 @@ export function LMSRedesignerApp() {
 
     // Extract courses when component mounts
     useEffect(() => {
-        try {
-            // Get all courses
-            const extractedCourses = extractAllCourses();
-
-            if (!extractedCourses || extractedCourses.length === 0) {
-                setError("❌ No courses found. Check your CSS selectors or LMS structure.");
-                console.warn("No courses found");
-                return;
-            }
-
-            // Save to chrome storage for the side panel to access
+        async function loadCourses() {
             try {
-                chrome.storage.local.set({ courses: extractedCourses });
-            } catch (e) {
-                console.warn("Could not save courses to storage:", e);
-            }
+                // Get all courses using the API
+                const extractedCourses = await fetchCourses();
+
+                if (!extractedCourses || extractedCourses.length === 0) {
+                    setError("❌ No courses found or API returned empty.");
+                    console.warn("No courses found");
+                    return;
+                }
+
+                // Save to chrome storage for the side panel to access
+                try {
+                    chrome.storage.local.set({ courses: extractedCourses });
+                } catch (e) {
+                    console.warn("Could not save courses to storage:", e);
+                }
 
             // Group by day
             const groupedByDay = groupCoursesByDay(extractedCourses);
@@ -69,6 +70,9 @@ export function LMSRedesignerApp() {
         } finally {
             setLoading(false);
         }
+        }
+        
+        loadCourses();
     }, []);
 
     if (loading) {

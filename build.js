@@ -46,3 +46,13 @@ build({
     entryPoints: ["background.js"],
     outfile: "dist/background.js",
 });
+
+// injected
+build({
+    bundle: true,
+    minify: false,
+    sourcemap: false,
+    format: "iife",
+    entryPoints: ["injected.js"],
+    outfile: "dist/injected.js",
+});

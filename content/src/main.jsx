@@ -3,7 +3,6 @@ import { LMSRedesignerApp } from "./App";
 import { QuickAccessApp } from "./QuickAccessApp";
 import { DISPLAY_COUNT, INJECT_TO } from "../scripts/const/classNames";
 import getClassesName from "../scripts/util/getClassesName";
-import setDisplayAll from "../scripts/util/setDisplayAll";
 import "../scripts/index.js";
 import { refreshAssignments } from "../scripts/index.js";
 
@@ -52,14 +51,7 @@ waitForElement(CONTAINER_CLASS, "my-redesign-root", async () => {
     const parent = document.querySelector(INJECT_TO);
     parent.insertAdjacentElement("beforebegin", rootElement);
 
-    // Step 2. reload if display count is not "すべて"
-    const counterEl = document.querySelector(DISPLAY_COUNT);
-    if (counterEl && counterEl?.dataset.limit !== "0") {
-        await setDisplayAll();
-        return;
-    }
-
-    // Step 3: if successfull, hide original content
+    // Step 2: if successfull, hide original content
     const container = document.querySelector(INJECT_TO);
     if (container) {
         container.style.display = "none";

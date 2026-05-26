@@ -45,11 +45,9 @@ export default async function fetchCourses() {
                 id: course.id,
                 fullTitle: course.fullname,
                 trimmedTitle,
-                shortname: course.shortname,
                 day,
                 period,
                 link: course.viewurl || `https://agulms45.aim.aoyama.ac.jp/course/view.php?id=${course.id}`,
-                image: course.courseimage,
             };
         });
     } catch (err) {

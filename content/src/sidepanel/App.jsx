@@ -56,13 +56,6 @@ export function SidePanelApp() {
             setLoading(false);
         });
 
-        chrome.storage.session.get("hasRefreshedThisSession", (result) => {
-            if (!result.hasRefreshedThisSession) {
-                triggerRefresh();
-                chrome.storage.session.set({ hasRefreshedThisSession: true });
-            }
-        });
-
         // Listen for updates from the content script
         const listener = (changes, namespace) => {
             if (namespace === "local") {
@@ -93,7 +86,13 @@ export function SidePanelApp() {
 
             <main className="tab-content">
                 {activeTab === "assignments" && (
-                    <Assignments assignments={assignments} loading={loading} lastUpdated={lastUpdated} onReload={triggerRefresh} canReload={isLmsActive} />
+                    <Assignments
+                        assignments={assignments}
+                        loading={loading}
+                        lastUpdated={lastUpdated}
+                        onReload={triggerRefresh}
+                        canReload={isLmsActive}
+                    />
                 )}
                 {activeTab === "courses" && <Courses courses={courses} loading={loading} />}
                 {activeTab === "settings" && <Settings />}

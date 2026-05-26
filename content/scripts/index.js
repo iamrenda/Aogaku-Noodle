@@ -10,7 +10,7 @@ export async function refreshAssignments() {
         chrome.storage.local.set({ assignments, lastUpdated });
     } catch (error) {
         console.warn("Failed to load assignments:", error);
-        alert("課題の読み込みに失敗しました。");
+        alert("課題の読み込みに失敗しました。再度更新してください。");
     }
 }
 

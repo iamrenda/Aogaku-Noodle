@@ -53,13 +53,13 @@ function Assignments({ loading, assignments, lastUpdated, onReload, canReload, h
                 >
                     <span>最終更新: {formattedLastUpdated}</span>
                     {canReload && (
-                        <button 
-                            className={`reload-button ${isReloading ? 'loading' : ''}`} 
+                        <button
+                            className={`reload-button ${isReloading ? "loading" : ""}`}
                             onClick={handleReload}
                             disabled={isReloading}
                         >
                             {isReloading && <span className="spinner-icon"></span>}
-                            {isReloading ? 'ローディング中...' : '更新する'}
+                            {isReloading ? "ローディング中..." : "更新する"}
                         </button>
                     )}
                 </div>

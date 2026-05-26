@@ -1,7 +1,6 @@
 /* global chrome */
 
 import getDaysLeft from "../util/getDaysLeft";
-import formatDate from "../util/formatDate";
 import { CiCalendarDate } from "react-icons/ci";
 
 function AssignmentCard({ assignment, index }) {
@@ -35,14 +34,10 @@ function AssignmentCard({ assignment, index }) {
                 <span className={`type-badge ${assignment.isAssignment ? "badge-assignment" : "badge-quiz"}`}>
                     {assignment.isAssignment ? "レポート" : "小テスト"}
                 </span>
-                <span className="class-name">{assignment.courseName}</span>
             </div>
             <h3 className="assignment-title">{assignment.name}</h3>
             <div className="card--footer">
-                <div className="due-date">
-                    <CiCalendarDate />
-                    {formatDate(assignment.dueDate)}
-                </div>
+                <span className="class-name">{assignment.courseName}</span>
                 {daysLeft && <div className={`days-left ${daysLeft === "期限切れ" ? "expired" : ""}`}>{daysLeft}</div>}
             </div>
         </a>

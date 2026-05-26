@@ -40,7 +40,7 @@ export default async function fetchAssignments() {
         return assignments.map((assignment) => ({
             id: assignment.id,
             name: assignment.activityname,
-            courseName: parseCourseTitle(assignment.coursefullname).className || assignment.coursefullname,
+            courseName: parseCourseTitle(assignment.course.fullname).className || assignment.course.fullname,
             dueDate: assignment.timesort,
             isAssignment: assignment.modulename === "assign",
             isOverdue: assignment.overdue,

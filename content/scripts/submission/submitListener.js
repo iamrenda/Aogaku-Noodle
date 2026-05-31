@@ -32,10 +32,7 @@ function isSubmissionButton(target) {
 }
 
 function hasSubmissionSuccessSignals() {
-    const successSignalLinks = [
-        "https://agulms45.aim.aoyama.ac.jp/mod/quiz/view.php",
-        "https://agulms45.aim.aoyama.ac.jp/mod/assign/view.php",
-    ];
+    const successSignalLinks = ["https://agulms45.aim.aoyama.ac.jp/mod/assign/view.php"];
 
     return successSignalLinks.some((link) => location.href.startsWith(link));
 }

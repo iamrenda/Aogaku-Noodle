@@ -14,7 +14,9 @@ npm run dev        # Vite dev server (limited use — extension runs from dist/)
 npm run lint       # ESLint
 ```
 
-To test the extension: run `npm run build`, then load the `dist/` folder as an unpacked extension in Chrome (`chrome://extensions` → Load unpacked).
+To test the extension: load the `dist/` folder as an unpacked extension in Chrome (`chrome://extensions` → Load unpacked).
+
+**`npm run build` runs automatically after every assistant turn** via a Stop hook in `.claude/settings.local.json`.
 
 ## Architecture
 

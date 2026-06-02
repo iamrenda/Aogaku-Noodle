@@ -1,4 +1,11 @@
 import { build } from "esbuild";
+import { cpSync, mkdirSync } from "fs";
+
+mkdirSync("dist/icons", { recursive: true });
+cpSync("manifest.json", "dist/manifest.json");
+cpSync("sidepanel.html", "dist/sidepanel.html");
+cpSync("grade-viewer.html", "dist/grade-viewer.html");
+cpSync("icons", "dist/icons", { recursive: true });
 
 const uiConfig = {
     bundle: true,

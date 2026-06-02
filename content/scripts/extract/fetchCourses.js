@@ -41,12 +41,18 @@ export default async function fetchCourses() {
         return courses.map((course) => {
             const { day, period, className: trimmedTitle } = parseCourseTitle(course.fullname);
 
+            const lecturerMatch = typeof course.idnumber === "string"
+                ? course.idnumber.match(/^\d+_\d+(.+)$/)
+                : null;
+            const lecturer = lecturerMatch?.[1] || null;
+
             return {
                 id: course.id,
                 fullTitle: course.fullname,
                 trimmedTitle,
                 day,
                 period,
+                lecturer,
                 link: course.viewurl || `https://agulms45.aim.aoyama.ac.jp/course/view.php?id=${course.id}`,
             };
         });

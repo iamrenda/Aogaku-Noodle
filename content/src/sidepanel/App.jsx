@@ -2,6 +2,7 @@
 
 import Assignments from "./tabs/Assignments";
 import Courses from "./tabs/Courses";
+import Syllabus from "./tabs/Syllabus";
 import Settings from "./tabs/Settings";
 import Tabs from "./tabs/Tabs";
 import { useState, useEffect } from "react";
@@ -108,7 +109,8 @@ export function SidePanelApp() {
                         canReload={isLmsActive}
                     />
                 )}
-                {activeTab === "courses" && <Courses courses={courses} syllabuses={syllabuses} selectedMajor={selectedMajor} loading={loading} />}
+                {activeTab === "courses" && <Courses courses={courses} loading={loading} />}
+                {activeTab === "syllabus" && <Syllabus courses={courses} syllabuses={syllabuses} selectedMajor={selectedMajor} loading={loading} />}
                 {activeTab === "settings" && <Settings />}
             </main>
         </div>

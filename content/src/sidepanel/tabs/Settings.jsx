@@ -41,7 +41,7 @@ function Settings() {
 
     const handleClearData = () => {
         if (window.confirm("保存されているすべての講義と課題データを削除しますか？")) {
-            chrome.storage.local.remove(["assignments", "courses"], () => {
+            chrome.storage.local.remove(["assignments", "courses", "syllabuses"], () => {
                 alert("データを削除しました。Moodleのページを再読み込みしてデータを再取得してください。");
             });
         }
@@ -88,6 +88,7 @@ function Settings() {
                             className="setting-select"
                         >
                             <option value="courses">講義</option>
+                            <option value="syllabus">シラバス</option>
                             <option value="assignments">課題</option>
                             <option value="settings">設定</option>
                         </select>

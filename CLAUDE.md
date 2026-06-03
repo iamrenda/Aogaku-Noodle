@@ -64,6 +64,8 @@ The side panel triggers data refreshes by sending `chrome.runtime.sendMessage` t
 |--------|------|-------------|
 | `fetchAllSyllabuses.js` | `content/scripts/syllabus/fetchAllSyllabuses.js` | Iterates enrolled courses from storage, builds search URLs for `syllabus.aoyama.ac.jp` using the user's selected major (read from `"selectedMajor"` in storage), proxies fetches through `background.js` (`FETCH_SYLLABUS` message), parses result HTML, retries without lecturer on 0 hits, deduplicates by `syllabusID`, and stores results under `"syllabuses"` in `chrome.storage.local`. |
 | `MajorPicker.jsx` | `content/src/sidepanel/components/MajorPicker.jsx` | Bottom-sheet component for selecting the user's 学科 (major). Exports the `faculties` array and `GENERAL_MAJOR_CODE` constant (used by `fetchAllSyllabuses.js` to resolve major codes). Selection is persisted to `"selectedMajor"` in `chrome.storage.local`. |
+| `Syllabus.jsx` | `content/src/sidepanel/tabs/Syllabus.jsx` | シラバス tab — shows all enrolled courses as `SyllabusCard`s. Has the fetch button. Cards are styled based on match count: gray = 0 hits, default = not yet fetched, green/clickable = 1 hit, yellow = 2+ hits (conflict). |
+| `SyllabusCard.jsx` | `content/src/sidepanel/components/SyllabusCard.jsx` | Card variant for the シラバス tab. Accepts `syllabusList` (null = pending, `[]` = none, 1 item = found, 2+ = conflict). Only clickable when exactly 1 syllabus is found. |
 
 > **Convention:** When adding a new script, add a row to the Scripts table above with its path and a one-line description.
 

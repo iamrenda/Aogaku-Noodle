@@ -147,6 +147,77 @@
     }
 }
 
+.course-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.course-card__syllabuses {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 4px;
+}
+
+.course-card__syllabus-link {
+    font-size: 13px;
+    color: #1b9d6f;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid #d1fae5;
+    background: #f0fdf4;
+    text-decoration: none;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.course-card__syllabus-link:hover {
+    background: #dcfce7;
+    text-decoration: none;
+}
+
+.syllabus-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.syllabus-search-btn {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #1b9d6f;
+    background: white;
+    color: #1b9d6f;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.syllabus-search-btn:hover:not(:disabled) {
+    background: #f0fdf4;
+}
+
+.syllabus-search-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.syllabus-search-error {
+    font-size: 12px;
+    color: #ef4444;
+}
+
+.syllabus-search-hint {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

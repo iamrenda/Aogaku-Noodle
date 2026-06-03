@@ -33,7 +33,15 @@ chrome.action.onClicked.addListener((tab) => {
     chrome.sidePanel.open({ windowId: tab.windowId });
 });
 
-chrome.runtime.onMessage.addListener((message) => {
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
+    if (message?.type === "FETCH_SYLLABUS") {
+        fetch(message.url)
+            .then((res) => res.text())
+            .then((html) => sendResponse({ html }))
+            .catch((err) => sendResponse({ error: err.message }));
+        return true;
+    }
+
     if (message?.type !== "OPEN_GRADE_VIEWER") {
         return;
     }

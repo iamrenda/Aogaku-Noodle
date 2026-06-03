@@ -19,6 +19,12 @@ function Tabs({ activeTab, setActiveTab }) {
             >
                 設定
             </button>
+            <button
+                className={`tab ${activeTab === "settings" ? "active" : ""}`}
+                onClick={() => setActiveTab("settings")}
+            >
+                設定
+            </button>
         </div>
     );
 }

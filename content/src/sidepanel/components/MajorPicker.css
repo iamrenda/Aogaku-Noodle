@@ -1,0 +1,133 @@
+.major-picker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    animation: fadeIn 0.15s ease;
+}
+
+.major-picker {
+    background: #fff;
+    width: 100%;
+    max-height: 80vh;
+    border-radius: 1rem 1rem 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.2s ease;
+}
+
+.major-picker__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.major-picker__title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.major-picker__close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    line-height: 1;
+    transition: background 0.15s;
+}
+.major-picker__close:hover {
+    background: var(--border-color);
+}
+
+.major-picker__faculty-list {
+    list-style: none;
+    margin: 0;
+    padding: 1rem 1.25rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.major-picker__faculty-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.major-picker__faculty-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.major-picker__major-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.major-picker__major-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    border-left: 2px solid;
+    padding: 0.2rem 0 0.2rem 0.6rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+    border-radius: 0 0.25rem 0.25rem 0;
+    transition: background 0.12s, transform 0.12s;
+}
+.major-picker__major-item:hover {
+    background: #f3f4f6;
+    transform: translateX(3px);
+}
+
+.major-picker__major-item--selected {
+    font-weight: 700;
+}
+.major-picker__major-item--selected:hover {
+    transform: none;
+}
+
+.major-picker__major-label {
+    flex: 1;
+}
+
+.major-picker__selected-badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #78716c;
+    flex-shrink: 0;
+}
+
+.major-picker__divider {
+    height: 1px;
+    background: var(--border-color);
+    margin-top: 0.5rem;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}

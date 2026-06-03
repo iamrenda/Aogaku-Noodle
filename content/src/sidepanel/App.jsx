@@ -9,6 +9,8 @@ import { useState, useEffect } from "react";
 export function SidePanelApp() {
     const [assignments, setAssignments] = useState([]);
     const [courses, setCourses] = useState([]);
+    const [syllabuses, setSyllabuses] = useState([]);
+    const [selectedMajor, setSelectedMajor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
@@ -38,12 +40,18 @@ export function SidePanelApp() {
         chrome.tabs.onUpdated.addListener(checkActiveTab);
 
         // Initial fetch
-        chrome.storage.local.get(["assignments", "courses", "defaultTab", "lastUpdated"], (result) => {
+        chrome.storage.local.get(["assignments", "courses", "syllabuses", "selectedMajor", "defaultTab", "lastUpdated"], (result) => {
             if (result.assignments) {
                 setAssignments(result.assignments);
             }
             if (result.courses) {
                 setCourses(result.courses);
+            }
+            if (result.syllabuses) {
+                setSyllabuses(result.syllabuses);
+            }
+            if (result.selectedMajor) {
+                setSelectedMajor(result.selectedMajor);
             }
             if (result.defaultTab) {
                 setActiveTab(result.defaultTab);
@@ -64,6 +72,12 @@ export function SidePanelApp() {
                 }
                 if (changes.courses) {
                     setCourses(changes.courses.newValue || []);
+                }
+                if (changes.syllabuses) {
+                    setSyllabuses(changes.syllabuses.newValue || []);
+                }
+                if (changes.selectedMajor) {
+                    setSelectedMajor(changes.selectedMajor.newValue || null);
                 }
                 if (changes.lastUpdated) {
                     setLastUpdated(changes.lastUpdated.newValue || null);
@@ -94,7 +108,7 @@ export function SidePanelApp() {
                         canReload={isLmsActive}
                     />
                 )}
-                {activeTab === "courses" && <Courses courses={courses} loading={loading} />}
+                {activeTab === "courses" && <Courses courses={courses} syllabuses={syllabuses} selectedMajor={selectedMajor} loading={loading} />}
                 {activeTab === "settings" && <Settings />}
             </main>
         </div>

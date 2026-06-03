@@ -482,6 +482,24 @@ body {
     color: #9ca3af;
 }
 
+.major-setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.major-setting-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.major-setting-value--unset {
+    color: #9ca3af;
+    font-weight: 400;
+}
+
 /* Checkbox setting items */
 .checkbox-item {
     flex-direction: row;

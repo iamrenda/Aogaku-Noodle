@@ -16,18 +16,20 @@ function getMajorCodes(majorLabel) {
 }
 
 function buildSyllabusSearchUrl(course, majorCodes) {
+    const year = new Date().getFullYear();
+
     const params = new URLSearchParams({
         __EVENTTARGET: "",
         __EVENTARGUMENT: "",
         __VIEWSTATEGENERATOR: "309A73F1",
-        YR: "2025",
+        YR: year.toString(),
         BU: "BU1",
         KW: "",
         KM: course.trimmedTitle || "",
         KI: course.lecturer || "",
         GKB: "",
         DL: "ja",
-        "ctl00$CPH1$btnKensaku": "検索/Search",
+        ctl00$CPH1$btnKensaku: "検索/Search",
         PC: "1",
         PI: "0",
         IP: "on",
@@ -71,10 +73,8 @@ function parseSearchResults(html) {
         subject: row.querySelector(".col7")?.textContent.trim() || "",
         syllabusID: row.querySelector(".col8 a")?.getAttribute("href") || "",
         campus:
-            row
-                .querySelector(`#CPH1_gvw_kensaku_lblJigen_${index} span`)
-                ?.textContent.replace(/[[\]]/g, "")
-                .trim() || "",
+            row.querySelector(`#CPH1_gvw_kensaku_lblJigen_${index} span`)?.textContent.replace(/[[\]]/g, "").trim() ||
+            "",
         grade: row.querySelector(".col9")?.textContent.trim() || "",
         credits: row.querySelector(".col6")?.textContent.trim() || "",
         additionalInfo: row.querySelector(".col10")?.textContent.trim() || "",
@@ -106,9 +106,7 @@ async function searchForCourse(course, majorCodes) {
 }
 
 async function fetchAllSyllabuses() {
-    const storage = await new Promise((resolve) =>
-        chrome.storage.local.get(["courses", "selectedMajor"], resolve)
-    );
+    const storage = await new Promise((resolve) => chrome.storage.local.get(["courses", "selectedMajor"], resolve));
     const courses = storage.courses || [];
     const majorCodes = getMajorCodes(storage.selectedMajor || "");
 

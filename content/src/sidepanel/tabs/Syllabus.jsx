@@ -44,11 +44,11 @@ function Syllabus({ loading, courses, syllabuses, selectedMajor }) {
         );
     }
 
-    // Group courses by day (same logic as Courses tab)
-    const groupedCourses = courses.reduce((acc, course) => {
-        const day = course.day !== undefined && course.day >= 0 && course.day <= 6 ? course.day : 7;
-        if (!acc[day]) acc[day] = [];
-        acc[day].push(course);
+    // Group courses by day — exclude special courses (day=7)
+    const regularCourses = courses.filter((c) => c.day >= 0 && c.day <= 6);
+    const groupedCourses = regularCourses.reduce((acc, course) => {
+        if (!acc[course.day]) acc[course.day] = [];
+        acc[course.day].push(course);
         return acc;
     }, {});
 
@@ -63,7 +63,7 @@ function Syllabus({ loading, courses, syllabuses, selectedMajor }) {
         7: "特設コース",
     };
 
-    const dayOrder = [1, 2, 3, 4, 5, 6, 0, 7];
+    const dayOrder = [1, 2, 3, 4, 5, 6, 0];
     const activeDays = dayOrder.filter((day) => groupedCourses[day] && groupedCourses[day].length > 0);
 
     const hasSyllabusData = syllabuses && syllabuses.length > 0;

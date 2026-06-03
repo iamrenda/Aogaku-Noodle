@@ -66,6 +66,7 @@ The side panel triggers data refreshes by sending `chrome.runtime.sendMessage` t
 | `MajorPicker.jsx` | `content/src/sidepanel/components/MajorPicker.jsx` | Bottom-sheet component for selecting the user's 学科 (major). Exports the `faculties` array and `GENERAL_MAJOR_CODE` constant (used by `fetchAllSyllabuses.js` to resolve major codes). Selection is persisted to `"selectedMajor"` in `chrome.storage.local`. |
 | `Syllabus.jsx` | `content/src/sidepanel/tabs/Syllabus.jsx` | シラバス tab — shows all enrolled courses as `SyllabusCard`s. Has the fetch button. Cards are styled based on match count: gray = 0 hits, default = not yet fetched, green/clickable = 1 hit, yellow = 2+ hits (conflict). |
 | `SyllabusCard.jsx` | `content/src/sidepanel/components/SyllabusCard.jsx` | Card variant for the シラバス tab. Accepts `syllabusList` (null = pending, `[]` = none, 1 item = found, 2+ = conflict). Only clickable when exactly 1 syllabus is found. |
+| `SyllabusPickerModal.jsx` | `content/src/sidepanel/components/SyllabusPickerModal.jsx` | Bottom-sheet modal used by SyllabusCard. In `conflict` mode shows a radio-list of matched syllabuses; selecting one and confirming updates storage to keep only that entry. In `manual` mode accepts a URL (must start with `https://syllabus.aoyama.ac.jp/shousai.ashx?`) and a subject name, then saves the entry to storage. |
 
 > **Convention:** When adding a new script, add a row to the Scripts table above with its path and a one-line description.
 

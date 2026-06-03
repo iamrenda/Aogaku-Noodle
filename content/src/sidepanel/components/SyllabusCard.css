@@ -70,7 +70,12 @@
 .syllabus-card--conflict {
     background: #fefce8;
     border-color: #fde68a;
-    cursor: default;
+    cursor: pointer;
+}
+.syllabus-card--conflict:hover {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 6px 12px;
+    transform: translateY(-2px);
+    border-color: #fbbf24;
 }
 .syllabus-card--conflict .syllabus-card__title {
     color: #92400e;
@@ -80,6 +85,19 @@
 }
 .syllabus-card--conflict .syllabus-card__status {
     color: #b45309;
+}
+
+.syllabus-card__add-link {
+    font-size: 11px;
+    font-weight: 500;
+    color: #6b7280;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    margin-top: 2px;
+}
+.syllabus-card__add-link:hover {
+    color: var(--accent);
 }
 
 /* ── shared inner elements ── */

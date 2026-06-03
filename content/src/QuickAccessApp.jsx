@@ -3,13 +3,15 @@ import { useState, useEffect } from "react";
 import CourseCard from "./sidepanel/components/CourseCard";
 import Assignments from "./sidepanel/tabs/Assignments";
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
-import { refreshAssignments } from "../scripts/index.js";
+import { refreshAssignments, refreshCourses } from "../scripts/index.js";
 import getTimeAgo from "./sidepanel/util/getTimeAgo.js";
 
 export function QuickAccessApp() {
     const [todayCourses, setTodayCourses] = useState([]);
+    const [hasAnyCourses, setHasAnyCourses] = useState(true);
     const [assignments, setAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [fetchingCourses, setFetchingCourses] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [isReloading, setIsReloading] = useState(false);
     const [, setTick] = useState(0);
@@ -25,9 +27,11 @@ export function QuickAccessApp() {
 
     useEffect(() => {
         chrome.storage.local.get(["courses", "assignments", "lastUpdated"], (result) => {
-            if (result.courses) {
+            const courses = result.courses || [];
+            setHasAnyCourses(courses.length > 0);
+            if (courses.length > 0) {
                 const today = new Date().getDay();
-                const grouped = groupCoursesByDay(result.courses);
+                const grouped = groupCoursesByDay(courses);
                 setTodayCourses(grouped[today] || []);
             }
             if (result.assignments) {
@@ -44,8 +48,11 @@ export function QuickAccessApp() {
         const listener = (changes, namespace) => {
             if (namespace === "local") {
                 if (changes.courses) {
+                    const courses = changes.courses.newValue || [];
+                    setHasAnyCourses(courses.length > 0);
+                    setFetchingCourses(false);
                     const today = new Date().getDay();
-                    const grouped = groupCoursesByDay(changes.courses.newValue || []);
+                    const grouped = groupCoursesByDay(courses);
                     setTodayCourses(grouped[today] || []);
                 }
                 if (changes.assignments) {
@@ -75,13 +82,29 @@ export function QuickAccessApp() {
         setTimeout(() => setIsReloading(false), 5000);
     };
 
+    const handleFetchCourses = () => {
+        setFetchingCourses(true);
+        refreshCourses();
+    };
+
     return (
         <section className="quick-access" id="quick-access">
             <h2 className="quick-access__title">クイックアクセス</h2>
 
             <div className="quick-access__section">
                 <h3 className="quick-access__subtitle">今日の講義</h3>
-                {todayCourses.length > 0 ? (
+                {!hasAnyCourses ? (
+                    <div className="quick-access__empty-courses">
+                        <p className="empty-message">講義データがありません</p>
+                        <button
+                            className="quick-access__fetch-btn"
+                            onClick={handleFetchCourses}
+                            disabled={fetchingCourses}
+                        >
+                            {fetchingCourses ? "読み込み中…" : "講義を読み込む"}
+                        </button>
+                    </div>
+                ) : todayCourses.length > 0 ? (
                     <div className="quick-access__list grid-layout">
                         {todayCourses.map((course, index) => (
                             <CourseCard key={`today-${index}`} course={course} />

@@ -248,6 +248,33 @@ body {
     padding: 10px 0;
 }
 
+.quick-access__empty-courses {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.quick-access__fetch-btn {
+    padding: 0.45rem 1.1rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+.quick-access__fetch-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+.quick-access__fetch-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .quick-access__list.grid-layout .assignments-list {
     display: contents;
 }

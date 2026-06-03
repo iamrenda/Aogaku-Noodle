@@ -482,6 +482,35 @@ body {
     color: #9ca3af;
 }
 
+/* Fetch courses button (empty state) */
+.fetch-courses-btn {
+    margin-top: 0.75rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.15s;
+}
+.fetch-courses-btn:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+.fetch-courses-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.fetch-courses-btn--link {
+    background: #326091;
+}
+.fetch-courses-btn--link:hover {
+    background: #1e4272;
+}
+
 /* Syllabus tab search bar */
 .syllabus-search-bar {
     display: flex;

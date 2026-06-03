@@ -25,6 +25,14 @@ export function SidePanelApp() {
         });
     };
 
+    const triggerFetchCourses = () => {
+        chrome.tabs.query({ url: "https://agulms45.aim.aoyama.ac.jp/*" }, (tabs) => {
+            if (tabs.length > 0) {
+                chrome.tabs.sendMessage(tabs[0].id, { type: "REFRESH_COURSES" });
+            }
+        });
+    };
+
     useEffect(() => {
         const checkActiveTab = async () => {
             const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -109,7 +117,7 @@ export function SidePanelApp() {
                         canReload={isLmsActive}
                     />
                 )}
-                {activeTab === "courses" && <Courses courses={courses} loading={loading} />}
+                {activeTab === "courses" && <Courses courses={courses} loading={loading} isLmsActive={isLmsActive} onFetchCourses={triggerFetchCourses} />}
                 {activeTab === "syllabus" && <Syllabus courses={courses} syllabuses={syllabuses} selectedMajor={selectedMajor} loading={loading} />}
                 {activeTab === "settings" && <Settings />}
             </main>

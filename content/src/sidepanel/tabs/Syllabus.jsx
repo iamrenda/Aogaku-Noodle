@@ -86,25 +86,26 @@ function Syllabus({ loading, courses, syllabuses, selectedMajor }) {
                 {syllabusError && <span className="syllabus-search-error">{syllabusError}</span>}
             </div>
 
-            {activeDays.map((day, dayIndex) => (
+            {!hasSyllabusData && !syllabusLoading && (
+                <div className="empty-state">
+                    <div className="empty-icon">📖</div>
+                    <p>シラバスを検索ボタンを押してデータを取得してください。</p>
+                </div>
+            )}
+
+            {hasSyllabusData && activeDays.map((day, dayIndex) => (
                 <div key={day} className="day-section">
                     <h2 className="day-header">{dayNames[day]}</h2>
                     <div className="day-courses">
-                        {groupedCourses[day].map((course, index) => {
-                            // null means data not yet fetched; [] means fetched but no hits
-                            const syllabusList = hasSyllabusData
-                                ? (syllabusMap[course.id] ?? null)
-                                : null;
-                            return (
-                                <SyllabusCard
-                                    key={index}
-                                    course={course}
-                                    syllabusList={syllabusList}
-                                    dayIndex={dayIndex}
-                                    index={index}
-                                />
-                            );
-                        })}
+                        {groupedCourses[day].map((course, index) => (
+                            <SyllabusCard
+                                key={index}
+                                course={course}
+                                syllabusList={syllabusMap[course.id] ?? null}
+                                dayIndex={dayIndex}
+                                index={index}
+                            />
+                        ))}
                     </div>
                 </div>
             ))}

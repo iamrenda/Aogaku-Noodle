@@ -1,8 +1,53 @@
-import EmptyState from "../components/EmptyState";
+import { useState } from "react";
 import Loading from "../components/Loading";
 import CourseCard from "../components/CourseCard";
 
-function Courses({ loading, courses }) {
+const LMS_URL = "https://agulms45.aim.aoyama.ac.jp/?redirect=0";
+
+function CoursesEmptyState({ isLmsActive, onFetchCourses }) {
+    const [fetching, setFetching] = useState(false);
+
+    const handleFetch = async () => {
+        setFetching(true);
+        onFetchCourses();
+        // Button stays in loading until storage update re-renders the component
+    };
+
+    if (isLmsActive) {
+        return (
+            <div className="empty-state">
+                <div className="empty-icon">📚</div>
+                <h2>講義データがありません</h2>
+                <p>ボタンを押してMoodleから講義を読み込んでください。</p>
+                <button
+                    className="fetch-courses-btn"
+                    onClick={handleFetch}
+                    disabled={fetching}
+                >
+                    {fetching ? "読み込み中…" : "講義を読み込む"}
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="empty-state">
+            <div className="empty-icon">🔑</div>
+            <h2>講義データがありません</h2>
+            <p>Moodleにログインして講義データを読み込んでください。</p>
+            <a
+                className="fetch-courses-btn fetch-courses-btn--link"
+                href={LMS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Moodleを開く
+            </a>
+        </div>
+    );
+}
+
+function Courses({ loading, courses, isLmsActive, onFetchCourses }) {
     if (loading) {
         return (
             <div className="courses-list">
@@ -14,7 +59,7 @@ function Courses({ loading, courses }) {
     if (courses.length === 0) {
         return (
             <div className="courses-list">
-                <EmptyState />
+                <CoursesEmptyState isLmsActive={isLmsActive} onFetchCourses={onFetchCourses} />
             </div>
         );
     }

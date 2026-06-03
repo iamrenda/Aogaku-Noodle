@@ -45,7 +45,20 @@ export function LMSRedesignerApp() {
     useEffect(() => {
         async function loadCourses() {
             try {
-                // Get all courses using the API
+                // Use cached courses if available — avoid unnecessary API calls
+                const stored = await new Promise((resolve) =>
+                    chrome.storage.local.get(["courses"], resolve)
+                );
+                const cachedCourses = stored.courses;
+
+                if (cachedCourses && cachedCourses.length > 0) {
+                    const groupedByDay = groupCoursesByDay(cachedCourses);
+                    setGrouped(groupedByDay);
+                    setLoading(false);
+                    return;
+                }
+
+                // No cached data — fetch from Moodle API
                 const extractedCourses = await fetchCourses();
 
                 if (!extractedCourses || extractedCourses.length === 0) {
@@ -61,17 +74,17 @@ export function LMSRedesignerApp() {
                     console.warn("Could not save courses to storage:", e);
                 }
 
-            // Group by day
-            const groupedByDay = groupCoursesByDay(extractedCourses);
-            setGrouped(groupedByDay);
-        } catch (err) {
-            console.error("❌ Error loading courses:", err);
-            setError(`Error: ${err.message}`);
-        } finally {
-            setLoading(false);
+                // Group by day
+                const groupedByDay = groupCoursesByDay(extractedCourses);
+                setGrouped(groupedByDay);
+            } catch (err) {
+                console.error("❌ Error loading courses:", err);
+                setError(`Error: ${err.message}`);
+            } finally {
+                setLoading(false);
+            }
         }
-        }
-        
+
         loadCourses();
     }, []);
 

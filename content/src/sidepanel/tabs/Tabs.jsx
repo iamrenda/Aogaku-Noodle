@@ -1,30 +1,25 @@
+import { MdMenuBook, MdDescription, MdAssignment, MdSettings } from "react-icons/md";
+
+const TABS = [
+    { id: "courses",     Icon: MdMenuBook,    label: "講義" },
+    { id: "syllabus",    Icon: MdDescription, label: "シラバス" },
+    { id: "assignments", Icon: MdAssignment,  label: "課題" },
+    { id: "settings",    Icon: MdSettings,    label: "設定" },
+];
+
 function Tabs({ activeTab, setActiveTab }) {
     return (
         <div className="tabs">
-            <button
-                className={`tab ${activeTab === "courses" ? "active" : ""}`}
-                onClick={() => setActiveTab("courses")}
-            >
-                講義
-            </button>
-            <button
-                className={`tab ${activeTab === "syllabus" ? "active" : ""}`}
-                onClick={() => setActiveTab("syllabus")}
-            >
-                シラバス
-            </button>
-            <button
-                className={`tab ${activeTab === "assignments" ? "active" : ""}`}
-                onClick={() => setActiveTab("assignments")}
-            >
-                課題
-            </button>
-            <button
-                className={`tab ${activeTab === "settings" ? "active" : ""}`}
-                onClick={() => setActiveTab("settings")}
-            >
-                設定
-            </button>
+            {TABS.map(({ id, Icon, label }) => (
+                <button
+                    key={id}
+                    className={`tab ${activeTab === id ? "active" : ""}`}
+                    onClick={() => setActiveTab(id)}
+                    title={label}
+                >
+                    <Icon size={20} />
+                </button>
+            ))}
         </div>
     );
 }

@@ -1,0 +1,156 @@
+===================================================================
+  PROJECT INTRO — aogaku_noodle Chrome Extension
+  (For use as a design / landing page prompt)
+===================================================================
+
+WHAT IT IS
+----------
+aogaku_noodle is an unofficial Chrome extension for students at
+Aoyama Gakuin University (AGU). It completely redesigns the university's
+Moodle LMS (agulms45.aim.aoyama.ac.jp) with a cleaner, faster, and
+more feature-rich interface — all injected directly into the live site
+without any server-side changes.
+
+Created by a student, for students. Not affiliated with Aoyama Gakuin
+University in any way.
+
+
+WHO IT'S FOR
+------------
+AGU students who find Moodle's default UI cluttered, slow, or hard to
+navigate day-to-day. The extension is especially useful for students
+who want quick access to today's schedule, upcoming assignment deadlines,
+syllabus info, and grades — all in one place.
+
+
+CORE FEATURES
+-------------
+
+1. TIMETABLE VIEW (Injected into courses.php)
+   - Replaces Moodle's default course list with a clean day-by-day
+     timetable grid (月〜土, with special courses grouped separately).
+   - Today's day is visually highlighted.
+   - Each course card shows the period number and course title.
+   - Clicking a course opens it in a new tab.
+   - On first visit, courses are fetched from Moodle's internal API
+     and cached locally. Subsequent visits load instantly from cache.
+
+2. SIDE PANEL (Always accessible while browsing Moodle)
+   A persistent side panel with four icon-tab sections:
+
+   📚 講義 (Courses)
+   - Shows all enrolled courses grouped by day of the week.
+   - If no course data exists yet, prompts the user to fetch it
+     (with a single button click if on Moodle, or a login link if not).
+   - Clicking a course opens it and optionally auto-closes the panel.
+
+   📄 シラバス (Syllabus)
+   - Lists all regular courses (day 0–6; special courses excluded).
+   - User first picks their 学科 (major/department) from a full
+     faculty/department picker in Settings.
+   - One button fetch: searches syllabus.aoyama.ac.jp for every
+     enrolled course and stores results locally.
+   - Color-coded cards:
+       • White / pending  = not yet fetched
+       • Green / clickable = exactly 1 syllabus found → opens it
+       • Yellow           = 2+ matches (conflict) → picker modal
+                           lets user select the correct one
+       • Gray             = 0 matches → manual URL entry available
+   - Manual entry: user can paste a syllabus URL + subject name
+     for courses the auto-search couldn't find.
+
+   📋 課題 (Assignments)
+   - Shows all upcoming (unsubmitted) assignments sorted by deadline.
+   - Each card shows course name, assignment title, due date, and
+     days remaining (urgent styling when close to deadline).
+   - Manual refresh button with "last updated X minutes ago" display.
+   - Reload triggers a live re-fetch from Moodle's API.
+
+   ⚙️ 設定 (Settings)
+   - Default opening tab selector (Courses / Syllabus / Assignments / Settings).
+   - Toggle: auto-close side panel when opening a course or assignment.
+   - Toggle: show a visual celebration effect on assignment submission.
+   - Department (学科) picker for syllabus search — bottom-sheet
+     modal organized by faculty, color-coded per faculty.
+   - Data management: clear all cached courses, assignments, and
+     syllabus data with one button.
+
+3. QUICK ACCESS WIDGET (Injected on the Moodle home page)
+   - Appears at the top of the Moodle dashboard.
+   - "今日の講義" section: shows today's courses as cards.
+     If no course data, shows a "講義を読み込む" fetch button.
+   - "直近の課題" section: shows upcoming assignments as cards,
+     same styling as the side panel, with a refresh button.
+
+4. GRADE VIEWER (Opens as a dedicated popup window)
+   - Triggered from the Moodle grades page via a content script.
+   - Reads grade data and presents it in a stylish card grid.
+   - Year filter to narrow down by academic year.
+   - "Flip card" interaction: front shows course name + instructor,
+     clicking flips to reveal the grade, credits, and year.
+   - Select any subset of courses to view together.
+
+5. ASSIGNMENT SUBMISSION FEEDBACK
+   - Detects when a student submits an assignment on Moodle.
+   - Plays a visual celebration effect (configurable in Settings).
+
+6. SESSION KEY HANDLING
+   - An isolated injected script polls window.M.cfg.sesskey from
+     Moodle's own JavaScript and passes it to the extension, enabling
+     authenticated API calls without any login flow.
+
+
+TECH STACK
+----------
+- Chrome Manifest V3 (content scripts, service worker, side panel)
+- React 19 + JSX for all UI surfaces
+- esbuild for bundling (multiple IIFE/ESM entry points)
+- react-icons (MD icon set) for tab navigation
+- chrome.storage.local for all persistent state
+- Moodle's internal REST API for courses and assignments
+- syllabus.aoyama.ac.jp scraped via background service worker proxy
+  (bypasses CORS restrictions)
+
+
+VISUAL IDENTITY / DESIGN LANGUAGE
+----------------------------------
+- Primary accent color: #1b9d6f (AGU green — matches the university's
+  brand color)
+- Clean card-based layouts with subtle shadows and rounded corners
+- Smooth animations: slide-up modals, flip cards, fade-in transitions
+- Japanese-first UI: all labels, messages, and empty states in Japanese
+- Day names in kanji: 月火水木金土日
+- Compact and information-dense — built for a narrow side panel (~350px)
+  but also adapts to the full-page timetable view
+
+
+TONE / POSITIONING FOR LANDING PAGE
+-------------------------------------
+- Student-made, student-focused
+- "Moodleをもっと使いやすく" (Make Moodle easier to use)
+- Solves real daily pain points: finding today's classes, tracking
+  deadlines, accessing syllabuses without navigating multiple pages
+- Free, unofficial, open for AGU students
+- Trustworthy: no data leaves the browser, all API calls go to AGU's
+  own servers or the official syllabus site
+
+
+KEY SCREENS TO SHOWCASE ON THE LANDING PAGE
+--------------------------------------------
+1. The timetable view replacing the default Moodle course list
+2. The side panel open with the Courses tab (day-grouped cards)
+3. The Syllabus tab with color-coded cards (green found, yellow conflict)
+4. The Assignments tab with deadline countdown cards
+5. The Grade Viewer flip cards (front = course name, back = grade)
+6. The Quick Access widget on the Moodle home page
+7. The Major Picker bottom sheet (colorful faculty list)
+
+
+SUGGESTED LANDING PAGE SECTIONS
+---------------------------------
+- Hero: tagline + extension badge/screenshot + install CTA
+- Features: 4–5 feature highlights with icons and mini-screenshots
+- How it works: 3-step flow (Install → Open Moodle → Done)
+- Screenshots / demo carousel
+- FAQ or disclaimer (unofficial, student-made, privacy note)
+- Footer: creator info, contact, disclaimer

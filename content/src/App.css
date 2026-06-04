@@ -404,6 +404,60 @@ body {
     background-color: #fecaca;
 }
 
+.quick-access .assignment-card.assignment-card--hidden {
+    opacity: 0.45;
+    filter: grayscale(60%);
+    border-style: dashed;
+    border-color: #d1d5db;
+    box-shadow: none;
+}
+.quick-access .assignment-card.assignment-card--hidden:hover {
+    opacity: 0.7;
+    transform: none;
+    box-shadow: none;
+    border-color: #9ca3af;
+}
+
+/* Assignment hide button & hidden toggle (quick access) */
+.quick-access .assignment-card__hide-btn {
+    background: none;
+    border: none;
+    font-size: 0.72rem;
+    color: #4b5563;
+    cursor: pointer;
+    padding: 0.1rem 0.4rem;
+    border-radius: 0.3rem;
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    white-space: nowrap;
+    line-height: 1;
+}
+.quick-access .assignment-card:hover .assignment-card__hide-btn {
+    opacity: 1;
+}
+.quick-access .assignment-card__hide-btn:hover {
+    color: #ef4444;
+    text-decoration: underline;
+}
+
+.quick-access .assignments-hidden-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: #4b5563;
+    text-decoration: none;
+    padding: 0.3rem 0;
+    border-radius: 0.4rem;
+    transition: color 0.15s;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.quick-access .assignments-hidden-toggle:hover {
+    color: #1b9d6f;
+    text-decoration: underline;
+}
+
 /* Reload Button */
 .reload-button {
     display: inline-flex;

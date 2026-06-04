@@ -51,7 +51,8 @@ export function SidePanelApp() {
         // Initial fetch
         chrome.storage.local.get(["assignments", "courses", "syllabuses", "selectedMajor", "defaultTab", "lastUpdated"], (result) => {
             if (result.assignments) {
-                setAssignments(result.assignments);
+                const sorted = [...result.assignments].sort((a, b) => a.dueDate - b.dueDate);
+                setAssignments(sorted);
             }
             if (result.courses) {
                 setCourses(result.courses);
@@ -77,7 +78,8 @@ export function SidePanelApp() {
         const listener = (changes, namespace) => {
             if (namespace === "local") {
                 if (changes.assignments) {
-                    setAssignments(changes.assignments.newValue || []);
+                    const sorted = [...(changes.assignments.newValue || [])].sort((a, b) => a.dueDate - b.dueDate);
+                    setAssignments(sorted);
                 }
                 if (changes.courses) {
                     setCourses(changes.courses.newValue || []);

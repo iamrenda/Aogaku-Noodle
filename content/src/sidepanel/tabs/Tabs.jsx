@@ -1,10 +1,10 @@
 import { MdMenuBook, MdDescription, MdAssignment, MdSettings } from "react-icons/md";
 
 const TABS = [
-    { id: "courses",     Icon: MdMenuBook,    label: "講義" },
-    { id: "syllabus",    Icon: MdDescription, label: "シラバス" },
-    { id: "assignments", Icon: MdAssignment,  label: "課題" },
-    { id: "settings",    Icon: MdSettings,    label: "設定" },
+    { id: "courses", Icon: MdMenuBook, label: "講義" },
+    { id: "syllabus", Icon: MdDescription, label: "シラバス" },
+    { id: "assignments", Icon: MdAssignment, label: "課題" },
+    { id: "settings", Icon: MdSettings, label: "設定" },
 ];
 
 function Tabs({ activeTab, setActiveTab }) {

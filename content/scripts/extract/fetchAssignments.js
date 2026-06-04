@@ -10,7 +10,6 @@ export default async function fetchAssignments() {
         return;
     }
 
-    const timesortfrom = Math.floor(Date.now() / 1000);
     const url = `/lib/ajax/service.php?sesskey=${encodeURIComponent(sesskey)}`;
 
     const payload = [
@@ -19,7 +18,6 @@ export default async function fetchAssignments() {
             methodname: "core_calendar_get_action_events_by_timesort",
             args: {
                 limitnum: 50,
-                timesortfrom,
                 limittononsuspendedevents: true,
             },
         },

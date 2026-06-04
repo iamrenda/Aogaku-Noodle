@@ -5,6 +5,7 @@ import Assignments from "./sidepanel/tabs/Assignments";
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
 import { refreshAssignments, refreshCourses } from "../scripts/index.js";
 import getTimeAgo from "./sidepanel/util/getTimeAgo.js";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 export function QuickAccessApp() {
     const [todayCourses, setTodayCourses] = useState([]);
@@ -15,6 +16,8 @@ export function QuickAccessApp() {
     const [lastUpdated, setLastUpdated] = useState(null);
     const [isReloading, setIsReloading] = useState(false);
     const [, setTick] = useState(0);
+    const [hiddenIds, setHiddenIds] = useState(new Set());
+    const [showHidden, setShowHidden] = useState(false);
 
     useEffect(() => {
         setIsReloading(false); // Clear reloading state when data actually updates
@@ -24,6 +27,20 @@ export function QuickAccessApp() {
         }, 30000); // Update every 30 seconds to be responsive
         return () => clearInterval(timer);
     }, [lastUpdated]);
+
+    // Load persisted hidden IDs
+    useEffect(() => {
+        chrome.storage.local.get(["hiddenAssignments"], (result) => {
+            if (result.hiddenAssignments) setHiddenIds(new Set(result.hiddenAssignments));
+        });
+        const listener = (changes, namespace) => {
+            if (namespace === "local" && changes.hiddenAssignments) {
+                setHiddenIds(new Set(changes.hiddenAssignments.newValue || []));
+            }
+        };
+        chrome.storage.onChanged.addListener(listener);
+        return () => chrome.storage.onChanged.removeListener(listener);
+    }, []);
 
     useEffect(() => {
         chrome.storage.local.get(["courses", "assignments", "lastUpdated"], (result) => {
@@ -36,7 +53,7 @@ export function QuickAccessApp() {
             }
             if (result.assignments) {
                 // sort by nearest deadline first
-                const sorted = [...result.assignments].sort((a, b) => a.timestamp - b.timestamp);
+                const sorted = [...result.assignments].sort((a, b) => a.dueDate - b.dueDate);
                 setAssignments(sorted);
             }
             if (result.lastUpdated) {
@@ -56,7 +73,7 @@ export function QuickAccessApp() {
                     setTodayCourses(grouped[today] || []);
                 }
                 if (changes.assignments) {
-                    const sorted = [...(changes.assignments.newValue || [])].sort((a, b) => a.timestamp - b.timestamp);
+                    const sorted = [...(changes.assignments.newValue || [])].sort((a, b) => a.dueDate - b.dueDate);
                     setAssignments(sorted);
                 }
                 if (changes.lastUpdated) {
@@ -86,6 +103,26 @@ export function QuickAccessApp() {
         setFetchingCourses(true);
         refreshCourses();
     };
+
+    const handleHide = (id) => {
+        setHiddenIds((prev) => {
+            const next = new Set(prev);
+            next.add(id);
+            chrome.storage.local.set({ hiddenAssignments: [...next] });
+            return next;
+        });
+    };
+
+    const handleShow = (id) => {
+        setHiddenIds((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            chrome.storage.local.set({ hiddenAssignments: [...next] });
+            return next;
+        });
+    };
+
+    const hiddenCount = assignments.filter((a) => hiddenIds.has(a.id)).length;
 
     return (
         <section className="quick-access" id="quick-access">
@@ -120,31 +157,54 @@ export function QuickAccessApp() {
                     <h3 className="quick-access__subtitle" style={{ margin: 0 }}>
                         直近の課題
                     </h3>
-                    {!loading && lastUpdated && (
-                        <div
-                            className="last-updated"
-                            style={{
-                                fontSize: "0.8rem",
-                                color: "var(--text-secondary)",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
-                            }}
-                        >
-                            <button
-                                className={`reload-button ${isReloading ? "loading" : ""}`}
-                                onClick={handleReload}
-                                disabled={isReloading}
+                    <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        {hiddenCount > 0 && (
+                            <a
+                                className="assignments-hidden-toggle"
+                                href="#"
+                                title={showHidden ? "非表示の課題を隠す" : `非表示の課題を表示する（${hiddenCount}件）`}
+                                onClick={(e) => { e.preventDefault(); setShowHidden((v) => !v); }}
                             >
-                                {isReloading && <span className="spinner-icon"></span>}
-                                {isReloading ? "ローディング中..." : "更新する"}
-                            </button>
-                            <span>最終更新: {getTimeAgo(lastUpdated)}</span>
-                        </div>
-                    )}
+                                {showHidden
+                                    ? <><MdVisibilityOff size={15} /><span>{hiddenCount}件</span></>
+                                    : <><MdVisibility size={15} /><span>{hiddenCount}件</span></>}
+                            </a>
+                        )}
+                        {!loading && lastUpdated && (
+                            <div
+                                className="last-updated"
+                                style={{
+                                    fontSize: "0.8rem",
+                                    color: "var(--text-secondary)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.5rem",
+                                }}
+                            >
+                                <button
+                                    className={`reload-button ${isReloading ? "loading" : ""}`}
+                                    onClick={handleReload}
+                                    disabled={isReloading}
+                                >
+                                    {isReloading && <span className="spinner-icon"></span>}
+                                    {isReloading ? "ローディング中..." : "更新する"}
+                                </button>
+                                <span>最終更新: {getTimeAgo(lastUpdated)}</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="quick-access__list grid-layout">
-                    <Assignments assignments={assignments} loading={loading} hideHeader={true} />
+                    <Assignments
+                        assignments={assignments}
+                        loading={loading}
+                        hideHeader={true}
+                        hideToggle={true}
+                        hiddenIdsExternal={hiddenIds}
+                        showHiddenExternal={showHidden}
+                        onHideExternal={handleHide}
+                        onShowExternal={handleShow}
+                    />
                 </div>
             </div>
         </section>

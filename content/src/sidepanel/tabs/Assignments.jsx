@@ -1,71 +1,165 @@
+/* global chrome */
 import { useState, useEffect } from "react";
 import getTimeAgo from "../util/getTimeAgo";
 import Loading from "../components/Loading";
 import AssignmentCard from "../components/AssignmentCard";
 import EmptyState from "../components/EmptyState";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
-function Assignments({ loading, assignments, lastUpdated, onReload, canReload, hideHeader }) {
+// Shared helper: persist hidden ids to storage
+function persistHidden(next) {
+    chrome.storage.local.set({ hiddenAssignments: [...next] });
+}
+
+/**
+ * Assignments list.
+ *
+ * Hiding state can be controlled externally by passing:
+ *   hiddenIdsExternal, showHiddenExternal, onHideExternal, onShowExternal, onToggleShowHiddenExternal, hideToggle
+ * When those are omitted the component manages hiding internally and renders
+ * the toggle link inline (side panel usage).
+ */
+function Assignments({
+    loading,
+    assignments,
+    lastUpdated,
+    onReload,
+    canReload,
+    hideHeader,
+    // controlled hiding (QuickAccess)
+    hiddenIdsExternal,
+    showHiddenExternal,
+    onHideExternal,
+    onShowExternal,
+    onToggleShowHiddenExternal,
+    hideToggle,
+}) {
     const [, setTick] = useState(0);
     const [isReloading, setIsReloading] = useState(false);
+    const [hiddenIdsInternal, setHiddenIdsInternal] = useState(new Set());
+    const [showHiddenInternal, setShowHiddenInternal] = useState(false);
+
+    const isControlled = hiddenIdsExternal !== undefined;
+    const hiddenIds = isControlled ? hiddenIdsExternal : hiddenIdsInternal;
+    const showHidden = isControlled ? showHiddenExternal : showHiddenInternal;
+
+    // Load persisted hidden IDs on mount (only when uncontrolled)
+    useEffect(() => {
+        if (isControlled) return;
+        chrome.storage.local.get(["hiddenAssignments"], (result) => {
+            if (result.hiddenAssignments) {
+                setHiddenIdsInternal(new Set(result.hiddenAssignments));
+            }
+        });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
-        setIsReloading(false); // Clear reloading state when data actually updates
+        setIsReloading(false);
         if (!lastUpdated) return;
-        const timer = setInterval(() => {
-            setTick((t) => t + 1);
-        }, 30000); // Update every 30 seconds to be responsive
+        const timer = setInterval(() => setTick((t) => t + 1), 30000);
         return () => clearInterval(timer);
     }, [lastUpdated]);
 
     const handleReload = () => {
         setIsReloading(true);
         onReload();
-        // Fallback in case content script fails or no tab is open
         setTimeout(() => setIsReloading(false), 5000);
+    };
+
+    const handleHide = (id) => {
+        if (isControlled) {
+            onHideExternal?.(id);
+        } else {
+            setHiddenIdsInternal((prev) => {
+                const next = new Set(prev);
+                next.add(id);
+                persistHidden(next);
+                return next;
+            });
+        }
+    };
+
+    const handleShow = (id) => {
+        if (isControlled) {
+            onShowExternal?.(id);
+        } else {
+            setHiddenIdsInternal((prev) => {
+                const next = new Set(prev);
+                next.delete(id);
+                persistHidden(next);
+                return next;
+            });
+        }
+    };
+
+    const handleToggleShowHidden = (e) => {
+        e.preventDefault();
+        if (isControlled) {
+            onToggleShowHiddenExternal?.();
+        } else {
+            setShowHiddenInternal((v) => !v);
+        }
     };
 
     const formattedLastUpdated = getTimeAgo(lastUpdated);
     const isLastUpdatedVisible = !loading && formattedLastUpdated;
 
-    if (loading) {
-        return <Loading />;
-    }
+    if (loading) return <Loading />;
+    if (assignments.length === 0) return <EmptyState />;
 
-    if (assignments.length === 0) {
-        return <EmptyState />;
-    }
+    const visibleAssignments = assignments.filter((a) => !hiddenIds.has(a.id));
+    const hiddenCount = assignments.length - visibleAssignments.length;
+    const displayedAssignments = showHidden ? assignments : visibleAssignments;
 
     return (
         <div className="assignments-list">
-            {isLastUpdatedVisible && !hideHeader && (
+            {!hideHeader && (isLastUpdatedVisible || (!hideToggle && hiddenCount > 0)) && (
                 <div
                     className="last-updated"
                     style={{
                         fontSize: "0.8rem",
                         color: "var(--text-secondary)",
-                        textAlign: "right",
                         marginBottom: "-0.5rem",
                         display: "flex",
-                        justifyContent: "flex-end",
+                        justifyContent: "space-between",
                         alignItems: "center",
                         gap: "0.5rem",
                     }}
                 >
-                    <span>最終更新: {formattedLastUpdated}</span>
-                    {canReload && (
-                        <button
-                            className={`reload-button ${isReloading ? "loading" : ""}`}
-                            onClick={handleReload}
-                            disabled={isReloading}
-                        >
-                            {isReloading && <span className="spinner-icon"></span>}
-                            {isReloading ? "ローディング中..." : "更新する"}
-                        </button>
+                    {!hideToggle && hiddenCount > 0 ? (
+                        <a className="assignments-hidden-toggle" onClick={handleToggleShowHidden} href="#" title={showHidden ? "非表示の課題を隠す" : `非表示の課題を表示する（${hiddenCount}件）`}>
+                            {showHidden
+                                ? <><MdVisibilityOff size={15} /><span>{hiddenCount}件</span></>
+                                : <><MdVisibility size={15} /><span>{hiddenCount}件</span></>}
+                        </a>
+                    ) : <span />}
+                    {isLastUpdatedVisible && (
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                            <span>最終更新: {formattedLastUpdated}</span>
+                            {canReload && (
+                                <button
+                                    className={`reload-button ${isReloading ? "loading" : ""}`}
+                                    onClick={handleReload}
+                                    disabled={isReloading}
+                                >
+                                    {isReloading && <span className="spinner-icon"></span>}
+                                    {isReloading ? "ローディング中..." : "更新する"}
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
             )}
-            {assignments.map((assignment, index) => (
-                <AssignmentCard key={index} assignment={assignment} index={index} />
+
+            {displayedAssignments.map((assignment, index) => (
+                <AssignmentCard
+                    key={assignment.id ?? index}
+                    assignment={assignment}
+                    index={index}
+                    isHidden={hiddenIds.has(assignment.id)}
+                    onHide={handleHide}
+                    onShow={handleShow}
+                />
             ))}
         </div>
     );

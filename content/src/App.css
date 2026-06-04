@@ -259,7 +259,7 @@ body {
     padding: 0.45rem 1.1rem;
     border-radius: 0.5rem;
     border: none;
-    background: var(--accent);
+    background: #1b9d6f;
     color: #fff;
     font-size: 0.875rem;
     font-weight: 600;
@@ -268,7 +268,7 @@ body {
     transition: background 0.15s;
 }
 .quick-access__fetch-btn:hover:not(:disabled) {
-    background: var(--accent-hover);
+    background: #457a5c;
 }
 .quick-access__fetch-btn:disabled {
     opacity: 0.6;

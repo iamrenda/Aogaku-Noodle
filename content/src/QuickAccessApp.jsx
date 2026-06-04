@@ -158,7 +158,7 @@ export function QuickAccessApp() {
                         直近の課題
                     </h3>
                     <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        {hiddenCount > 0 && (
+                        {assignments.length > 0 && hiddenCount > 0 && (
                             <a
                                 className="assignments-hidden-toggle"
                                 href="#"
@@ -194,18 +194,31 @@ export function QuickAccessApp() {
                         )}
                     </div>
                 </div>
-                <div className="quick-access__list grid-layout">
-                    <Assignments
-                        assignments={assignments}
-                        loading={loading}
-                        hideHeader={true}
-                        hideToggle={true}
-                        hiddenIdsExternal={hiddenIds}
-                        showHiddenExternal={showHidden}
-                        onHideExternal={handleHide}
-                        onShowExternal={handleShow}
-                    />
-                </div>
+                {assignments.length === 0 ? (
+                    <div className="quick-access__empty-courses">
+                        <p className="empty-message">課題データがありません</p>
+                        <button
+                            className="quick-access__fetch-btn"
+                            onClick={handleReload}
+                            disabled={isReloading}
+                        >
+                            {isReloading ? "読み込み中…" : "課題を読み込む"}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="quick-access__list grid-layout">
+                        <Assignments
+                            assignments={assignments}
+                            loading={loading}
+                            hideHeader={true}
+                            hideToggle={true}
+                            hiddenIdsExternal={hiddenIds}
+                            showHiddenExternal={showHidden}
+                            onHideExternal={handleHide}
+                            onShowExternal={handleShow}
+                        />
+                    </div>
+                )}
             </div>
         </section>
     );

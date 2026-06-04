@@ -117,6 +117,7 @@ export function SidePanelApp() {
                         lastUpdated={lastUpdated}
                         onReload={triggerRefresh}
                         canReload={isLmsActive}
+                        isLmsActive={isLmsActive}
                     />
                 )}
                 {activeTab === "courses" && <Courses courses={courses} loading={loading} isLmsActive={isLmsActive} onFetchCourses={triggerFetchCourses} />}

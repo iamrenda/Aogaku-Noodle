@@ -3,8 +3,51 @@ import { useState, useEffect } from "react";
 import getTimeAgo from "../util/getTimeAgo";
 import Loading from "../components/Loading";
 import AssignmentCard from "../components/AssignmentCard";
-import EmptyState from "../components/EmptyState";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+
+const LMS_URL = "https://agulms45.aim.aoyama.ac.jp/?redirect=0";
+
+function AssignmentsEmptyState({ isLmsActive, onFetch }) {
+    const [fetching, setFetching] = useState(false);
+
+    const handleFetch = () => {
+        setFetching(true);
+        onFetch?.();
+    };
+
+    if (isLmsActive) {
+        return (
+            <div className="empty-state">
+                <div className="empty-icon">📝</div>
+                <h2>課題データがありません</h2>
+                <p>ボタンを押してMoodleから課題を読み込んでください。</p>
+                <button
+                    className="fetch-courses-btn"
+                    onClick={handleFetch}
+                    disabled={fetching}
+                >
+                    {fetching ? "読み込み中…" : "更新する"}
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="empty-state">
+            <div className="empty-icon">🔑</div>
+            <h2>課題データがありません</h2>
+            <p>Moodleにログインして課題データを読み込んでください。</p>
+            <a
+                className="fetch-courses-btn fetch-courses-btn--link"
+                href={LMS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Moodleを開く
+            </a>
+        </div>
+    );
+}
 
 // Shared helper: persist hidden ids to storage
 function persistHidden(next) {
@@ -25,6 +68,7 @@ function Assignments({
     lastUpdated,
     onReload,
     canReload,
+    isLmsActive,
     hideHeader,
     // controlled hiding (QuickAccess)
     hiddenIdsExternal,
@@ -105,7 +149,7 @@ function Assignments({
     const isLastUpdatedVisible = !loading && formattedLastUpdated;
 
     if (loading) return <Loading />;
-    if (assignments.length === 0) return <EmptyState />;
+    if (assignments.length === 0) return <AssignmentsEmptyState isLmsActive={isLmsActive} onFetch={onReload} />;
 
     const visibleAssignments = assignments.filter((a) => !hiddenIds.has(a.id));
     const hiddenCount = assignments.length - visibleAssignments.length;

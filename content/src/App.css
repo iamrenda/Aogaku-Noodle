@@ -242,10 +242,41 @@ body {
 }
 
 .quick-access__list.grid-layout {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: 16px;
-    padding: 10px 0;
+    padding: 10px 0 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Always reserve scrollbar space to avoid layout shift */
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+}
+
+.quick-access__list.grid-layout:hover {
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.quick-access__list.grid-layout::-webkit-scrollbar {
+    height: 4px;
+}
+
+.quick-access__list.grid-layout::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.quick-access__list.grid-layout::-webkit-scrollbar-thumb {
+    background: transparent;
+    border-radius: 9999px;
+}
+
+.quick-access__list.grid-layout:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.quick-access__list.grid-layout:hover::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35);
 }
 
 .quick-access__empty-courses {
@@ -283,18 +314,20 @@ body {
     display: none;
 }
 
-/* Responsive: Tablet */
-@media (max-width: 768px) {
-    .quick-access__list.grid-layout {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    }
+
+.quick-access__list.grid-layout > *,
+.quick-access__list.grid-layout .course-card,
+.quick-access__list.grid-layout .assignment-card {
+    flex-shrink: 0;
+    min-width: 280px;
+    max-width: 320px;
 }
 
-/* Responsive: Mobile */
-@media (max-width: 480px) {
-    .quick-access__list.grid-layout {
-        grid-template-columns: 1fr;
-    }
+/* Course cards: no fixed height — flex stretch makes all equal to the tallest */
+
+/* Assignment cards: fixed height so all are uniform */
+.quick-access__list.grid-layout .assignment-card {
+    height: 160px;
 }
 
 .quick-access .assignment-card {
@@ -308,7 +341,6 @@ body {
     color: inherit;
     transition: all 0.3s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    height: 100%;
     cursor: pointer;
 }
 
@@ -358,11 +390,9 @@ body {
     line-height: 1.4;
     margin: 0 0 16px 0;
     color: #1f2937;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .quick-access .card--footer {

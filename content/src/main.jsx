@@ -1,8 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { LMSRedesignerApp } from "./App";
 import { QuickAccessApp } from "./QuickAccessApp";
-import { DISPLAY_COUNT, INJECT_TO } from "../scripts/const/classNames";
-import getClassesName from "../scripts/util/getClassesName";
+import { INJECT_TO } from "../scripts/const/classNames";
 import "../scripts/index.js";
 import { refreshAssignments } from "../scripts/index.js";
 
@@ -40,29 +39,19 @@ function waitForElement(selector, rootId, callback) {
     });
 }
 
-// Target the element you want to "replace" or "attach to"
-const { CONTAINER_CLASS } = getClassesName();
-
-waitForElement(CONTAINER_CLASS, "my-redesign-root", async () => {
-    // Step 1: Create React root
+// Inject LMSRedesignerApp immediately without waiting for Moodle's course list
+if (!document.getElementById("my-redesign-root")) {
     const rootElement = document.createElement("div");
     rootElement.id = "my-redesign-root";
 
     const parent = document.querySelector(INJECT_TO);
-    parent.insertAdjacentElement("beforebegin", rootElement);
-
-    // Step 2: if successfull, hide original content
-    const container = document.querySelector(INJECT_TO);
-    if (container) {
-        container.style.display = "none";
+    if (parent) {
+        parent.insertAdjacentElement("beforebegin", rootElement);
+        parent.style.display = "none";
     }
 
-    // Step 3: Render React component with courses
-    const root = createRoot(rootElement);
-
-    // Pass courses as props to the app
-    root.render(<LMSRedesignerApp />);
-});
+    createRoot(rootElement).render(<LMSRedesignerApp />);
+}
 
 // Home Page Injection for Quick Access Section
 function injectQuickAccess() {

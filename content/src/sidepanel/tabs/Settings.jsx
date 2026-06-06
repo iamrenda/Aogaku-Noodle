@@ -68,7 +68,7 @@ function Settings() {
                                 className="setting-button"
                                 onClick={() => setShowMajorPicker(true)}
                             >
-                                学科を選択する
+                                選択する
                             </button>
                         </div>
                     </div>

@@ -39,8 +39,9 @@ function waitForElement(selector, rootId, callback) {
     });
 }
 
-// Inject LMSRedesignerApp immediately without waiting for Moodle's course list
-if (!document.getElementById("my-redesign-root")) {
+// Inject LMSRedesignerApp only on the courses page
+const isCoursesPage = window.location.href.startsWith("https://agulms45.aim.aoyama.ac.jp/my/courses.php");
+if (isCoursesPage && !document.getElementById("my-redesign-root")) {
     const rootElement = document.createElement("div");
     rootElement.id = "my-redesign-root";
 

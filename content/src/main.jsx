@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { LMSRedesignerApp } from "./App";
 import { QuickAccessApp } from "./QuickAccessApp";
+import { HomeTabsApp } from "./HomeTabsApp";
 import { INJECT_TO } from "../scripts/const/classNames";
 import "../scripts/index.js";
 import { refreshAssignments } from "../scripts/index.js";
@@ -74,6 +75,14 @@ function injectQuickAccess() {
 
         const root = createRoot(rootElement);
         root.render(<QuickAccessApp />);
+
+        // Home tabs (講義 / 課題) section, right after quick access
+        if (!document.getElementById("home-tabs-root")) {
+            const homeTabsRoot = document.createElement("div");
+            homeTabsRoot.id = "home-tabs-root";
+            rootElement.insertAdjacentElement("afterend", homeTabsRoot);
+            createRoot(homeTabsRoot).render(<HomeTabsApp />);
+        }
     });
 }
 injectQuickAccess();

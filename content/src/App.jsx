@@ -10,7 +10,7 @@ import { useState, useEffect } from "react";
 /**
  * DaySection - Renders courses for a single day
  */
-function DaySection({ dayNumber, courses }) {
+export function DaySection({ dayNumber, courses }) {
     if (!courses || courses.length === 0) return null;
 
     const dayName = dayNumber <= 6 ? DAY_NAMES[dayNumber] : dayNumber === 7 ? "特設コース" : "?";

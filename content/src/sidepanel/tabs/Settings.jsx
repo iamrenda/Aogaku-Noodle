@@ -8,16 +8,34 @@ function Settings() {
     const [showSubmissionFeedback, setShowSubmissionFeedback] = useState(true);
     const [selectedMajor, setSelectedMajor] = useState(null);
     const [showMajorPicker, setShowMajorPicker] = useState(false);
+    const [extensionEnabled, setExtensionEnabled] = useState(true);
+    const [lmsRedesignEnabled, setLmsRedesignEnabled] = useState(true);
+    const [quickAccessEnabled, setQuickAccessEnabled] = useState(true);
+    const [gradeViewerEnabled, setGradeViewerEnabled] = useState(true);
 
     useEffect(() => {
         chrome.storage.local.get(
-            ["defaultTab", "autoClosePanel", "showSubmissionFeedback", "selectedMajor"],
+            [
+                "defaultTab",
+                "autoClosePanel",
+                "showSubmissionFeedback",
+                "selectedMajor",
+                "extensionEnabled",
+                "lmsRedesignEnabled",
+                "quickAccessEnabled",
+                "gradeViewerEnabled",
+            ],
             (result) => {
                 if (result.defaultTab) setDefaultTab(result.defaultTab);
                 if (result.autoClosePanel !== undefined) setAutoClosePanel(result.autoClosePanel);
-                if (result.showSubmissionFeedback !== undefined) setShowSubmissionFeedback(result.showSubmissionFeedback);
+                if (result.showSubmissionFeedback !== undefined)
+                    setShowSubmissionFeedback(result.showSubmissionFeedback);
                 if (result.selectedMajor) setSelectedMajor(result.selectedMajor);
-            }
+                if (result.extensionEnabled !== undefined) setExtensionEnabled(result.extensionEnabled);
+                if (result.lmsRedesignEnabled !== undefined) setLmsRedesignEnabled(result.lmsRedesignEnabled);
+                if (result.quickAccessEnabled !== undefined) setQuickAccessEnabled(result.quickAccessEnabled);
+                if (result.gradeViewerEnabled !== undefined) setGradeViewerEnabled(result.gradeViewerEnabled);
+            },
         );
     }, []);
 
@@ -39,6 +57,30 @@ function Settings() {
         chrome.storage.local.set({ showSubmissionFeedback: newValue });
     };
 
+    const handleExtensionEnabledChange = (e) => {
+        const newValue = e.target.checked;
+        setExtensionEnabled(newValue);
+        chrome.storage.local.set({ extensionEnabled: newValue });
+    };
+
+    const handleLmsRedesignEnabledChange = (e) => {
+        const newValue = e.target.checked;
+        setLmsRedesignEnabled(newValue);
+        chrome.storage.local.set({ lmsRedesignEnabled: newValue });
+    };
+
+    const handleQuickAccessEnabledChange = (e) => {
+        const newValue = e.target.checked;
+        setQuickAccessEnabled(newValue);
+        chrome.storage.local.set({ quickAccessEnabled: newValue });
+    };
+
+    const handleGradeViewerEnabledChange = (e) => {
+        const newValue = e.target.checked;
+        setGradeViewerEnabled(newValue);
+        chrome.storage.local.set({ gradeViewerEnabled: newValue });
+    };
+
     const handleClearData = () => {
         if (window.confirm("保存されているすべての講義と課題データを削除しますか？")) {
             chrome.storage.local.remove(["assignments", "courses", "syllabuses"], () => {
@@ -56,24 +98,6 @@ function Settings() {
     return (
         <>
             <div className="settings-list">
-                <div className="settings-section">
-                    <h2 className="settings-header">シラバス設定</h2>
-                    <div className="setting-item">
-                        <label className="setting-label">所属学科</label>
-                        <div className="major-setting-row">
-                            <span className={`major-setting-value ${!selectedMajor ? "major-setting-value--unset" : ""}`}>
-                                {selectedMajor || "未選択"}
-                            </span>
-                            <button
-                                className="setting-button"
-                                onClick={() => setShowMajorPicker(true)}
-                            >
-                                選択する
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
                 <div className="settings-section">
                     <h2 className="settings-header">一般設定</h2>
 
@@ -106,6 +130,90 @@ function Settings() {
                             className="setting-checkbox"
                         />
                     </div>
+                </div>
+
+                <div className="settings-section">
+                    <h2 className="settings-header">学科設定</h2>
+
+                    <div className="setting-item">
+                        <div className="major-setting-row">
+                            <span
+                                className={`major-setting-value ${!selectedMajor ? "major-setting-value--unset" : ""}`}
+                            >
+                                {selectedMajor || "未選択"}
+                            </span>
+                            <button className="setting-button" onClick={() => setShowMajorPicker(true)}>
+                                選択する
+                            </button>
+                        </div>
+                    </div>
+
+                    <p className="setting-description">シラバス検索に使用されます。所属する学科を選択してください。</p>
+                </div>
+
+                <div className="settings-section">
+                    <h2 className="settings-header">拡張機能</h2>
+
+                    <div className="setting-item checkbox-item">
+                        <label htmlFor="extension-enabled-checkbox" className="setting-label">
+                            拡張機能を有効にする
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="extension-enabled-checkbox"
+                            checked={extensionEnabled}
+                            onChange={handleExtensionEnabledChange}
+                            className="setting-checkbox"
+                        />
+                    </div>
+
+                    <p className="setting-description">無効にした場合、ページを再読み込みすると変更が反映されます。</p>
+                </div>
+
+                <div className={`settings-section ${!extensionEnabled ? "settings-section--disabled" : ""}`}>
+                    <h2 className="settings-header">リニューアル設定</h2>
+
+                    <div className="setting-item checkbox-item">
+                        <label htmlFor="quick-access-enabled-checkbox" className="setting-label">
+                            ホームページ
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="quick-access-enabled-checkbox"
+                            checked={quickAccessEnabled}
+                            onChange={handleQuickAccessEnabledChange}
+                            disabled={!extensionEnabled}
+                            className="setting-checkbox"
+                        />
+                    </div>
+
+                    <div className="setting-item checkbox-item">
+                        <label htmlFor="lms-redesign-enabled-checkbox" className="setting-label">
+                            マイコース
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="lms-redesign-enabled-checkbox"
+                            checked={lmsRedesignEnabled}
+                            onChange={handleLmsRedesignEnabledChange}
+                            disabled={!extensionEnabled}
+                            className="setting-checkbox"
+                        />
+                    </div>
+
+                    <div className="setting-item checkbox-item">
+                        <label htmlFor="grade-viewer-enabled-checkbox" className="setting-label">
+                            成績ビューア
+                        </label>
+                        <input
+                            type="checkbox"
+                            id="grade-viewer-enabled-checkbox"
+                            checked={gradeViewerEnabled}
+                            onChange={handleGradeViewerEnabledChange}
+                            disabled={!extensionEnabled}
+                            className="setting-checkbox"
+                        />
+                    </div>
 
                     <div className="setting-item checkbox-item">
                         <label htmlFor="show-submission-feedback-checkbox" className="setting-label">
@@ -116,9 +224,12 @@ function Settings() {
                             id="show-submission-feedback-checkbox"
                             checked={showSubmissionFeedback}
                             onChange={handleShowSubmissionFeedbackChange}
+                            disabled={!extensionEnabled}
                             className="setting-checkbox"
                         />
                     </div>
+
+                    <p className="setting-description">変更はページを再読み込みすると反映されます。</p>
                 </div>
 
                 <div className="settings-section">

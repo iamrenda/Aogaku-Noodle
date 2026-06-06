@@ -446,6 +446,11 @@ body {
     animation: fadeIn 0.4s ease-out;
 }
 
+.settings-section--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .settings-header {
     font-size: 1.05rem;
     font-weight: 700;

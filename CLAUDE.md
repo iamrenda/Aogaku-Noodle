@@ -57,9 +57,14 @@ This extension spans three hosts, not just Moodle:
 | `courses` | `content/scripts/index.js`, `content/src/App.jsx` | enrolled courses |
 | `hiddenAssignments` | `QuickAccessApp.jsx`, `Assignments.jsx`, `HomeTabsApp.jsx` | array of hidden assignment IDs |
 | `syllabuses` | `fetchAllSyllabuses.js`, `SyllabusPickerModal.jsx` | syllabus search results |
-| `selectedMajor` | `MajorPicker` / `Settings.jsx` | user's 学科 label |
+| `selectedMajor` | `MajorPicker` / `Settings.jsx` | user's 学科 label; shown in dedicated 学科設定 section |
 | `gradeViewerData` | `background.js` (on `OPEN_GRADE_VIEWER`) | scraped grade rows for the viewer window |
-| `defaultTab`, `autoClosePanel`, `showSubmissionFeedback` | `Settings.jsx` | user preferences |
+| `defaultTab`, `autoClosePanel` | `Settings.jsx` | general preferences (一般設定 section) |
+| `showSubmissionFeedback` | `Settings.jsx` | submission effect toggle; in リニューアル設定, gated by `extensionEnabled` |
+| `extensionEnabled` | `Settings.jsx` | global on/off for all injections; in 拡張機能 section (default: true) |
+| `lmsRedesignEnabled` | `Settings.jsx` | toggle LMSRedesignerApp on courses page; in リニューアル設定 (default: true) |
+| `quickAccessEnabled` | `Settings.jsx` | toggle QuickAccessApp + HomeTabsApp on home page; in リニューアル設定 (default: true) |
+| `gradeViewerEnabled` | `Settings.jsx` | toggle grade viewer overlay on grades page; in リニューアル設定 (default: true) |
 
 ### Key Directories
 

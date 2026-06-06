@@ -1,3 +1,4 @@
+/* global chrome */
 import { createRoot } from "react-dom/client";
 import { LMSRedesignerApp } from "./App";
 import { QuickAccessApp } from "./QuickAccessApp";
@@ -40,9 +41,10 @@ function waitForElement(selector, rootId, callback) {
     });
 }
 
-// Inject LMSRedesignerApp only on the courses page
-const isCoursesPage = window.location.href.startsWith("https://agulms45.aim.aoyama.ac.jp/my/courses.php");
-if (isCoursesPage && !document.getElementById("my-redesign-root")) {
+function injectLMSRedesigner() {
+    const isCoursesPage = window.location.href.startsWith("https://agulms45.aim.aoyama.ac.jp/my/courses.php");
+    if (!isCoursesPage || document.getElementById("my-redesign-root")) return;
+
     const rootElement = document.createElement("div");
     rootElement.id = "my-redesign-root";
 
@@ -55,7 +57,6 @@ if (isCoursesPage && !document.getElementById("my-redesign-root")) {
     createRoot(rootElement).render(<LMSRedesignerApp />);
 }
 
-// Home Page Injection for Quick Access Section
 function injectQuickAccess() {
     const url = window.location.href;
     const isHomePage = url === "https://agulms45.aim.aoyama.ac.jp/?redirect=0";
@@ -70,13 +71,11 @@ function injectQuickAccess() {
         const rootElement = document.createElement("div");
         rootElement.id = "quick-access-root";
 
-        // Insert right before the site news forum
         el.insertAdjacentElement("beforebegin", rootElement);
 
         const root = createRoot(rootElement);
         root.render(<QuickAccessApp />);
 
-        // Home tabs (講義 / 課題) section, right after quick access
         if (!document.getElementById("home-tabs-root")) {
             const homeTabsRoot = document.createElement("div");
             homeTabsRoot.id = "home-tabs-root";
@@ -85,4 +84,17 @@ function injectQuickAccess() {
         }
     });
 }
-injectQuickAccess();
+
+chrome.storage.local.get(
+    ["extensionEnabled", "lmsRedesignEnabled", "quickAccessEnabled"],
+    (result) => {
+        const extensionEnabled = result.extensionEnabled !== false;
+        if (!extensionEnabled) return;
+
+        const lmsRedesignEnabled = result.lmsRedesignEnabled !== false;
+        if (lmsRedesignEnabled) injectLMSRedesigner();
+
+        const quickAccessEnabled = result.quickAccessEnabled !== false;
+        if (quickAccessEnabled) injectQuickAccess();
+    }
+);

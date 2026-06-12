@@ -1,0 +1,188 @@
+/* Add-assignment bottom sheet. Rendered on the live Moodle page (content
+   script) as well as inside the side panel, so colours are hard-coded to the
+   extension's green theme rather than relying on CSS variables that may be
+   absent on Moodle's pages. */
+
+.aamodal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 99999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: aamodalFadeIn 0.15s ease;
+}
+
+.aamodal {
+    background: #fff;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    border-radius: 1rem 1rem 0 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: aamodalSlideUp 0.2s ease;
+    box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.aamodal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.aamodal__title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: #1f2937;
+}
+
+.aamodal__close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    line-height: 1;
+    transition: background 0.15s;
+}
+.aamodal__close:hover {
+    background: #f3f4f6;
+}
+
+.aamodal__body {
+    padding: 1rem 1.25rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.aamodal__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.aamodal__label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.aamodal__req {
+    color: #ef4444;
+}
+
+.aamodal__optional {
+    font-weight: 400;
+    color: #9ca3af;
+}
+
+.aamodal__input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #1f2937;
+    background: #f9fafb;
+    outline: none;
+    transition:
+        border-color 0.2s,
+        background 0.2s;
+}
+.aamodal__input:focus {
+    border-color: #1b9d6f;
+    background: #fff;
+}
+
+.aamodal__seg {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.aamodal__seg-btn {
+    flex: 1;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.aamodal__seg-btn:hover {
+    border-color: #1b9d6f;
+}
+.aamodal__seg-btn--active {
+    background: #d1fae5;
+    border-color: #1b9d6f;
+    color: #065f46;
+}
+
+.aamodal__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.aamodal__btn {
+    padding: 0.55rem 1.1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #e5e7eb;
+    background: #f3f4f6;
+    color: #1f2937;
+    transition: background 0.15s;
+}
+.aamodal__btn:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+.aamodal__btn--primary {
+    background: #1b9d6f;
+    color: #fff;
+    border-color: #1b9d6f;
+}
+.aamodal__btn--primary:hover:not(:disabled) {
+    background: #168a61;
+}
+.aamodal__btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+@keyframes aamodalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes aamodalSlideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}

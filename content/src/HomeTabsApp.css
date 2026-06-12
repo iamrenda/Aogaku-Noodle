@@ -248,6 +248,53 @@
     color: #ef4444;
 }
 
+/* Right-side action group (complete + hide) in the card header */
+.home-tabs .assignment-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Complete button — only on custom (user-added) cards, always visible */
+.home-tabs .assignment-card__complete-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.3rem;
+    line-height: 1;
+    transition: color 0.15s;
+}
+.home-tabs .assignment-card__complete-btn:hover {
+    color: #1b9d6f;
+}
+
+/* "課題を追加" button — sits on the left of the toolbar */
+.home-tabs__add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-right: auto;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid #1b9d6f;
+    background: #fff;
+    color: #1b9d6f;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+.home-tabs__add-btn:hover {
+    background: #1b9d6f;
+    color: #fff;
+}
+
 /* Hidden cards shown via the toggle */
 .home-tabs .assignment-card.assignment-card--hidden {
     opacity: 0.45;

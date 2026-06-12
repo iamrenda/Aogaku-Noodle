@@ -5,12 +5,14 @@ import Assignments from "./sidepanel/tabs/Assignments";
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
 import { refreshAssignments, refreshCourses } from "../scripts/index.js";
 import getTimeAgo from "./sidepanel/util/getTimeAgo.js";
+import activeCustomAssignments from "./sidepanel/util/activeCustomAssignments.js";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 export function QuickAccessApp() {
     const [todayCourses, setTodayCourses] = useState([]);
     const [hasAnyCourses, setHasAnyCourses] = useState(true);
     const [assignments, setAssignments] = useState([]);
+    const [customAssignments, setCustomAssignments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [fetchingCourses, setFetchingCourses] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(null);
@@ -43,7 +45,7 @@ export function QuickAccessApp() {
     }, []);
 
     useEffect(() => {
-        chrome.storage.local.get(["courses", "assignments", "lastUpdated"], (result) => {
+        chrome.storage.local.get(["courses", "assignments", "customAssignments", "lastUpdated"], (result) => {
             const courses = result.courses || [];
             setHasAnyCourses(courses.length > 0);
             if (courses.length > 0) {
@@ -55,6 +57,9 @@ export function QuickAccessApp() {
                 // sort by nearest deadline first
                 const sorted = [...result.assignments].sort((a, b) => a.dueDate - b.dueDate);
                 setAssignments(sorted);
+            }
+            if (result.customAssignments) {
+                setCustomAssignments(result.customAssignments);
             }
             if (result.lastUpdated) {
                 setLastUpdated(result.lastUpdated);
@@ -75,6 +80,9 @@ export function QuickAccessApp() {
                 if (changes.assignments) {
                     const sorted = [...(changes.assignments.newValue || [])].sort((a, b) => a.dueDate - b.dueDate);
                     setAssignments(sorted);
+                }
+                if (changes.customAssignments) {
+                    setCustomAssignments(changes.customAssignments.newValue || []);
                 }
                 if (changes.lastUpdated) {
                     setLastUpdated(changes.lastUpdated.newValue);
@@ -122,9 +130,21 @@ export function QuickAccessApp() {
         });
     };
 
+    const handleComplete = (id) => {
+        chrome.storage.local.get(["customAssignments"], (result) => {
+            const list = (result.customAssignments || []).map((c) =>
+                c.id === id ? { ...c, completed: true } : c,
+            );
+            chrome.storage.local.set({ customAssignments: list });
+        });
+    };
+
     const now = Date.now();
     const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
-    const urgentAssignments = assignments.filter(
+    const allAssignments = [...assignments, ...activeCustomAssignments(customAssignments)].sort(
+        (a, b) => (a.dueDate ?? Infinity) - (b.dueDate ?? Infinity),
+    );
+    const urgentAssignments = allAssignments.filter(
         (a) => a.isOverdue || (a.dueDate && a.dueDate * 1000 <= now + threeDaysMs),
     );
 
@@ -211,7 +231,7 @@ export function QuickAccessApp() {
                         )}
                     </div>
                 </div>
-                {assignments.length === 0 ? (
+                {allAssignments.length === 0 ? (
                     <div className="quick-access__empty-courses">
                         <p className="empty-message">課題データがありません</p>
                         <button className="quick-access__fetch-btn" onClick={handleReload} disabled={isReloading}>
@@ -231,6 +251,7 @@ export function QuickAccessApp() {
                             showHiddenExternal={showHidden}
                             onHideExternal={handleHide}
                             onShowExternal={handleShow}
+                            onCompleteExternal={handleComplete}
                         />
                     </div>
                 )}

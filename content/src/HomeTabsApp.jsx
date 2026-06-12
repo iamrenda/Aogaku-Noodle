@@ -1,11 +1,13 @@
 /* global chrome */
 import { useState, useEffect } from "react";
-import { MdMenuBook, MdAssignment, MdVisibility, MdVisibilityOff } from "react-icons/md";
+import { MdMenuBook, MdAssignment, MdVisibility, MdVisibilityOff, MdAdd } from "react-icons/md";
 import { DaySection } from "./App";
 import groupCoursesByDay from "../scripts/util/groupCoursesByDay";
 import { refreshAssignments } from "../scripts/index.js";
 import getTimeAgo from "./sidepanel/util/getTimeAgo.js";
+import activeCustomAssignments from "./sidepanel/util/activeCustomAssignments.js";
 import AssignmentCard from "./sidepanel/components/AssignmentCard";
+import AddAssignmentModal from "./sidepanel/components/AddAssignmentModal";
 import "./HomeTabsApp.css";
 
 const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
@@ -49,26 +51,33 @@ export function HomeTabsApp() {
     const [activeTab, setActiveTab] = useState("courses");
     const [courses, setCourses] = useState([]);
     const [assignments, setAssignments] = useState([]);
+    const [customAssignments, setCustomAssignments] = useState([]);
     const [hiddenIds, setHiddenIds] = useState(new Set());
     const [showHidden, setShowHidden] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(null);
     const [isReloading, setIsReloading] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [showAddModal, setShowAddModal] = useState(false);
     const [, setTick] = useState(0);
 
     useEffect(() => {
-        chrome.storage.local.get(["courses", "assignments", "hiddenAssignments", "lastUpdated"], (result) => {
-            setCourses(result.courses || []);
-            setAssignments(result.assignments || []);
-            if (result.hiddenAssignments) setHiddenIds(new Set(result.hiddenAssignments));
-            if (result.lastUpdated) setLastUpdated(result.lastUpdated);
-            setLoading(false);
-        });
+        chrome.storage.local.get(
+            ["courses", "assignments", "customAssignments", "hiddenAssignments", "lastUpdated"],
+            (result) => {
+                setCourses(result.courses || []);
+                setAssignments(result.assignments || []);
+                setCustomAssignments(result.customAssignments || []);
+                if (result.hiddenAssignments) setHiddenIds(new Set(result.hiddenAssignments));
+                if (result.lastUpdated) setLastUpdated(result.lastUpdated);
+                setLoading(false);
+            },
+        );
 
         const listener = (changes, namespace) => {
             if (namespace !== "local") return;
             if (changes.courses) setCourses(changes.courses.newValue || []);
             if (changes.assignments) setAssignments(changes.assignments.newValue || []);
+            if (changes.customAssignments) setCustomAssignments(changes.customAssignments.newValue || []);
             if (changes.hiddenAssignments) setHiddenIds(new Set(changes.hiddenAssignments.newValue || []));
             if (changes.lastUpdated) setLastUpdated(changes.lastUpdated.newValue);
         };
@@ -109,12 +118,22 @@ export function HomeTabsApp() {
         setTimeout(() => setIsReloading(false), 5000);
     };
 
+    const handleComplete = (id) => {
+        chrome.storage.local.get(["customAssignments"], (result) => {
+            const list = (result.customAssignments || []).map((c) =>
+                c.id === id ? { ...c, completed: true } : c,
+            );
+            chrome.storage.local.set({ customAssignments: list });
+        });
+    };
+
     if (loading) return null;
 
     const grouped = groupCoursesByDay(courses);
 
-    const visibleAssignments = assignments.filter((a) => !hiddenIds.has(a.id));
-    const hiddenCount = assignments.length - visibleAssignments.length;
+    const allAssignments = [...assignments, ...activeCustomAssignments(customAssignments)];
+    const visibleAssignments = allAssignments.filter((a) => !hiddenIds.has(a.id));
+    const hiddenCount = allAssignments.length - visibleAssignments.length;
     const displayedAssignments = showHidden ? assignments : visibleAssignments;
     const assignmentGroups = groupAssignmentsByDate(displayedAssignments);
     let cardIndex = 0;
@@ -152,66 +171,75 @@ export function HomeTabsApp() {
 
             {activeTab === "assignments" && (
                 <div className="home-tabs__panel">
-                    {assignments.length === 0 ? (
+                    <div className="home-tabs__toolbar">
+                        <button
+                            className="home-tabs__add-btn"
+                            onClick={() => setShowAddModal(true)}
+                            title="課題を追加"
+                        >
+                            <MdAdd size={16} />
+                            <span>課題を追加</span>
+                        </button>
+                        {hiddenCount > 0 && (
+                            <a
+                                className="assignments-hidden-toggle"
+                                href="#"
+                                title={showHidden ? "非表示の課題を隠す" : `非表示の課題を表示する（${hiddenCount}件）`}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowHidden((v) => !v);
+                                }}
+                            >
+                                {showHidden ? <MdVisibilityOff size={15} /> : <MdVisibility size={15} />}
+                                <span>{hiddenCount}件</span>
+                            </a>
+                        )}
+                        {lastUpdated && (
+                            <div className="home-tabs__last-updated">
+                                <button
+                                    className={`reload-button ${isReloading ? "loading" : ""}`}
+                                    onClick={handleReload}
+                                    disabled={isReloading}
+                                >
+                                    {isReloading && <span className="spinner-icon"></span>}
+                                    {isReloading ? "ローディング中..." : "更新する"}
+                                </button>
+                                <span>最終更新: {getTimeAgo(lastUpdated)}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {allAssignments.length === 0 ? (
                         <p className="empty-message">課題データがありません</p>
                     ) : (
-                        <>
-                            <div className="home-tabs__toolbar">
-                                {hiddenCount > 0 && (
-                                    <a
-                                        className="assignments-hidden-toggle"
-                                        href="#"
-                                        title={showHidden ? "非表示の課題を隠す" : `非表示の課題を表示する（${hiddenCount}件）`}
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            setShowHidden((v) => !v);
-                                        }}
-                                    >
-                                        {showHidden ? <MdVisibilityOff size={15} /> : <MdVisibility size={15} />}
-                                        <span>{hiddenCount}件</span>
-                                    </a>
-                                )}
-                                {lastUpdated && (
-                                    <div className="home-tabs__last-updated">
-                                        <button
-                                            className={`reload-button ${isReloading ? "loading" : ""}`}
-                                            onClick={handleReload}
-                                            disabled={isReloading}
-                                        >
-                                            {isReloading && <span className="spinner-icon"></span>}
-                                            {isReloading ? "ローディング中..." : "更新する"}
-                                        </button>
-                                        <span>最終更新: {getTimeAgo(lastUpdated)}</span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {assignmentGroups.map((group) => (
-                                <section key={group.key} className="day-section">
-                                    <div className="day-section__header-container">
-                                        <h3 className="day-section__header">{group.label}</h3>
-                                    </div>
-                                    <div className="home-tabs__assignment-grid">
-                                        {group.items.map((assignment) => {
-                                            const index = cardIndex++;
-                                            return (
-                                                <AssignmentCard
-                                                    key={assignment.id ?? index}
-                                                    assignment={assignment}
-                                                    index={index}
-                                                    isHidden={hiddenIds.has(assignment.id)}
-                                                    onHide={handleHide}
-                                                    onShow={handleShow}
-                                                />
-                                            );
-                                        })}
-                                    </div>
-                                </section>
-                            ))}
-                        </>
+                        assignmentGroups.map((group) => (
+                            <section key={group.key} className="day-section">
+                                <div className="day-section__header-container">
+                                    <h3 className="day-section__header">{group.label}</h3>
+                                </div>
+                                <div className="home-tabs__assignment-grid">
+                                    {group.items.map((assignment) => {
+                                        const index = cardIndex++;
+                                        return (
+                                            <AssignmentCard
+                                                key={assignment.id ?? index}
+                                                assignment={assignment}
+                                                index={index}
+                                                isHidden={hiddenIds.has(assignment.id)}
+                                                onHide={handleHide}
+                                                onShow={handleShow}
+                                                onComplete={handleComplete}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                            </section>
+                        ))
                     )}
                 </div>
             )}
+
+            {showAddModal && <AddAssignmentModal onClose={() => setShowAddModal(false)} />}
         </section>
     );
 }

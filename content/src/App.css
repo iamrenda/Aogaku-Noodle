@@ -470,6 +470,30 @@ body {
     text-decoration: underline;
 }
 
+/* Right-side action group (complete + hide) in the card header */
+.quick-access .assignment-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Complete button — only on custom (user-added) cards, always visible */
+.quick-access .assignment-card__complete-btn {
+    display: inline-flex;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.3rem;
+    line-height: 1;
+    transition: color 0.15s;
+}
+.quick-access .assignment-card__complete-btn:hover {
+    color: #1b9d6f;
+}
+
 .quick-access .assignments-hidden-toggle {
     display: inline-flex;
     align-items: center;

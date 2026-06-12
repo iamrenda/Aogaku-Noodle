@@ -56,6 +56,7 @@ This extension spans three hosts, not just Moodle:
 | `assignments`, `lastUpdated` | `content/scripts/index.js` | assignment list + fetch timestamp |
 | `courses` | `content/scripts/index.js`, `content/src/App.jsx` | enrolled courses |
 | `hiddenAssignments` | `QuickAccessApp.jsx`, `Assignments.jsx`, `HomeTabsApp.jsx` | array of hidden assignment IDs |
+| `customAssignments` | `AddAssignmentModal.jsx`, `QuickAccessApp.jsx`, `HomeTabsApp.jsx` | user-added assignments (`isCustom: true`); merged into the lists alongside fetched ones. Each has a `completed` flag — completing one (via the card's check button) filters it out |
 | `syllabuses` | `fetchAllSyllabuses.js`, `SyllabusPickerModal.jsx` | syllabus search results |
 | `selectedMajor` | `MajorPicker` / `Settings.jsx` | user's 学科 label; shown in dedicated 学科設定 section |
 | `gradeViewerData` | `background.js` (on `OPEN_GRADE_VIEWER`) | scraped grade rows for the viewer window |
@@ -79,10 +80,12 @@ This extension spans three hosts, not just Moodle:
 
 Three React apps are mounted in sequence on the Moodle home page:
 
-1. **`#quick-access-root`** (`QuickAccessApp`) — today's courses (horizontal scroll) + upcoming assignments (horizontal scroll). Injected just before `#site-news-forum`.
+1. **`#quick-access-root`** (`QuickAccessApp`) — today's courses (horizontal scroll) + 直近の課題 (only overdue or due within 3 days; horizontal scroll). Has a "+" button to add a custom assignment. Injected just before `#site-news-forum`.
 2. **`#home-tabs-root`** (`HomeTabsApp`) — tabbed section immediately after Quick Access with two tabs:
    - **講義** — courses grouped by day using `DaySection` (exported from `App.jsx`), same layout as `LMSRedesignerApp`.
-   - **課題** — visible assignments grouped by due date (nearest/overdue first), rendered as a fixed-height card grid. Includes a reload button, last-updated timestamp, and show/hide hidden-assignments toggle.
+   - **課題** — visible assignments grouped by due date (nearest/overdue first), rendered as a fixed-height card grid. Includes an "課題を追加" button, reload button, last-updated timestamp, and show/hide hidden-assignments toggle.
+
+Both surfaces merge user-added **custom assignments** (`customAssignments` storage key) into their lists via `activeCustomAssignments.js`. Custom cards render like fetched ones but show a check button to mark complete (see `AddAssignmentModal.jsx`).
 
 `HomeTabsApp` uses CSS class `home-tabs__tab--active` (not `active`) to avoid Bootstrap's `.active` button repaint, which makes tab text disappear against the background.
 
@@ -109,7 +112,9 @@ The side panel triggers data refreshes by sending `chrome.runtime.sendMessage` t
 | `Syllabus.jsx` | `content/src/sidepanel/tabs/Syllabus.jsx` | シラバス tab — shows all enrolled courses as `SyllabusCard`s. Has the fetch button. Cards are styled based on match count: gray = 0 hits, default = not yet fetched, green/clickable = 1 hit, yellow = 2+ hits (conflict). |
 | `SyllabusCard.jsx` | `content/src/sidepanel/components/SyllabusCard.jsx` | Card variant for the シラバス tab. Accepts `syllabusList` (null = pending, `[]` = none, 1 item = found, 2+ = conflict). Only clickable when exactly 1 syllabus is found. |
 | `SyllabusPickerModal.jsx` | `content/src/sidepanel/components/SyllabusPickerModal.jsx` | Bottom-sheet modal used by SyllabusCard. In `conflict` mode shows a radio-list of matched syllabuses; selecting one and confirming updates storage to keep only that entry. In `manual` mode accepts a URL (must start with `https://syllabus.aoyama.ac.jp/shousai.ashx?`) and a subject name, then saves the entry to storage. |
-| `HomeTabsApp.jsx` | `content/src/HomeTabsApp.jsx` | Tabbed section injected after Quick Access on the home page. 講義 tab reuses `DaySection` from `App.jsx`. 課題 tab groups assignments by due date into a card grid with reload, last-updated, and hidden-assignment toggle. Uses `home-tabs__tab--active` (not `.active`) to avoid Bootstrap button repaint. |
+| `HomeTabsApp.jsx` | `content/src/HomeTabsApp.jsx` | Tabbed section injected after Quick Access on the home page. 講義 tab reuses `DaySection` from `App.jsx`. 課題 tab groups assignments by due date into a card grid with an "課題を追加" button, reload, last-updated, and hidden-assignment toggle. Uses `home-tabs__tab--active` (not `.active`) to avoid Bootstrap button repaint. |
+| `AddAssignmentModal.jsx` | `content/src/sidepanel/components/AddAssignmentModal.jsx` | Bottom-sheet form (opened from the "+" button in Quick Access / Home Tabs 課題) to add a user-created assignment: name (required), 種別 (レポート/小テスト), course (nullable), due date (nullable), URL (nullable). Appends the entry to `"customAssignments"` in storage. |
+| `activeCustomAssignments.js` | `content/src/sidepanel/util/activeCustomAssignments.js` | Maps stored `customAssignments` into the `AssignmentCard` shape — drops `completed` entries and computes `isOverdue` from the due date. Used by `QuickAccessApp.jsx` and `HomeTabsApp.jsx` to merge custom assignments into their lists. |
 
 > **Convention:** When adding a new script, add a row to the Scripts table above with its path and a one-line description.
 

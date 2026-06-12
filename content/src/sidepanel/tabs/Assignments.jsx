@@ -76,6 +76,7 @@ function Assignments({
     onHideExternal,
     onShowExternal,
     onToggleShowHiddenExternal,
+    onCompleteExternal,
     hideToggle,
 }) {
     const [, setTick] = useState(0);
@@ -203,6 +204,7 @@ function Assignments({
                     isHidden={hiddenIds.has(assignment.id)}
                     onHide={handleHide}
                     onShow={handleShow}
+                    onComplete={onCompleteExternal}
                 />
             ))}
         </div>

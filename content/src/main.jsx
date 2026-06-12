@@ -59,7 +59,7 @@ function injectLMSRedesigner() {
 
 function injectQuickAccess() {
     const url = window.location.href;
-    const isHomePage = url === "https://agulms45.aim.aoyama.ac.jp/?redirect=0";
+    const isHomePage = url.startsWith("https://agulms45.aim.aoyama.ac.jp/?redirect=0");
 
     if (!isHomePage) return;
 
@@ -85,16 +85,13 @@ function injectQuickAccess() {
     });
 }
 
-chrome.storage.local.get(
-    ["extensionEnabled", "lmsRedesignEnabled", "quickAccessEnabled"],
-    (result) => {
-        const extensionEnabled = result.extensionEnabled !== false;
-        if (!extensionEnabled) return;
+chrome.storage.local.get(["extensionEnabled", "lmsRedesignEnabled", "quickAccessEnabled"], (result) => {
+    const extensionEnabled = result.extensionEnabled !== false;
+    if (!extensionEnabled) return;
 
-        const lmsRedesignEnabled = result.lmsRedesignEnabled !== false;
-        if (lmsRedesignEnabled) injectLMSRedesigner();
+    const lmsRedesignEnabled = result.lmsRedesignEnabled !== false;
+    if (lmsRedesignEnabled) injectLMSRedesigner();
 
-        const quickAccessEnabled = result.quickAccessEnabled !== false;
-        if (quickAccessEnabled) injectQuickAccess();
-    }
-);
+    const quickAccessEnabled = result.quickAccessEnabled !== false;
+    if (quickAccessEnabled) injectQuickAccess();
+});

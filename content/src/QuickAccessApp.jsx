@@ -122,7 +122,13 @@ export function QuickAccessApp() {
         });
     };
 
-    const hiddenCount = assignments.filter((a) => hiddenIds.has(a.id)).length;
+    const now = Date.now();
+    const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+    const urgentAssignments = assignments.filter(
+        (a) => a.isOverdue || (a.dueDate && a.dueDate * 1000 <= now + threeDaysMs),
+    );
+
+    const hiddenCount = urgentAssignments.filter((a) => hiddenIds.has(a.id)).length;
 
     return (
         <section className="quick-access" id="quick-access">
@@ -155,19 +161,30 @@ export function QuickAccessApp() {
             <div className="quick-access__section">
                 <div style={{ display: "flex", gap: "1rem", alignItems: "center", marginBottom: "1rem" }}>
                     <h3 className="quick-access__subtitle" style={{ margin: 0 }}>
-                        直近の課題
+                        直近の課題 (3日以内)
                     </h3>
                     <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                        {assignments.length > 0 && hiddenCount > 0 && (
+                        {urgentAssignments.length > 0 && hiddenCount > 0 && (
                             <a
                                 className="assignments-hidden-toggle"
                                 href="#"
                                 title={showHidden ? "非表示の課題を隠す" : `非表示の課題を表示する（${hiddenCount}件）`}
-                                onClick={(e) => { e.preventDefault(); setShowHidden((v) => !v); }}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setShowHidden((v) => !v);
+                                }}
                             >
-                                {showHidden
-                                    ? <><MdVisibilityOff size={15} /><span>{hiddenCount}件</span></>
-                                    : <><MdVisibility size={15} /><span>{hiddenCount}件</span></>}
+                                {showHidden ? (
+                                    <>
+                                        <MdVisibilityOff size={15} />
+                                        <span>{hiddenCount}件</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <MdVisibility size={15} />
+                                        <span>{hiddenCount}件</span>
+                                    </>
+                                )}
                             </a>
                         )}
                         {!loading && lastUpdated && (
@@ -197,18 +214,16 @@ export function QuickAccessApp() {
                 {assignments.length === 0 ? (
                     <div className="quick-access__empty-courses">
                         <p className="empty-message">課題データがありません</p>
-                        <button
-                            className="quick-access__fetch-btn"
-                            onClick={handleReload}
-                            disabled={isReloading}
-                        >
+                        <button className="quick-access__fetch-btn" onClick={handleReload} disabled={isReloading}>
                             {isReloading ? "読み込み中…" : "課題を読み込む"}
                         </button>
                     </div>
+                ) : urgentAssignments.length === 0 ? (
+                    <p className="empty-message">直近3日以内の課題はありません 🎉</p>
                 ) : (
                     <div className="quick-access__list grid-layout">
                         <Assignments
-                            assignments={assignments}
+                            assignments={urgentAssignments}
                             loading={loading}
                             hideHeader={true}
                             hideToggle={true}

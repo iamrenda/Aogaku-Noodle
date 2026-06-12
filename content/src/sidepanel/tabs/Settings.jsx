@@ -148,7 +148,7 @@ function Settings() {
                         </div>
                     </div>
 
-                    <p className="setting-description">シラバス検索に使用されます。所属する学科を選択してください。</p>
+                    <p className="setting-description">シラバス検索に使用されます。</p>
                 </div>
 
                 <div className="settings-section">

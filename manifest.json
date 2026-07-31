@@ -1,9 +1,9 @@
 {
     "manifest_version": 3,
     "name": "青学Noodle",
-    "version": "1.7",
+    "version": "1.8",
     "description": "青山学院大学LMS「Moodle」のChrome 拡張機能 - Created by iamrenda",
-    "permissions": ["scripting", "sidePanel", "storage", "windows"],
+    "permissions": ["sidePanel", "storage", "windows"],
     "host_permissions": ["https://syllabus.aoyama.ac.jp/*"],
     "action": {},
     "side_panel": {

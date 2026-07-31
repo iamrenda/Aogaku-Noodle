@@ -47,10 +47,12 @@ chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
     }
 
     const grades = Array.isArray(message.grades) ? message.grades : [];
+    const cumulativeGpa = typeof message.cumulativeGpa === "number" ? message.cumulativeGpa : null;
 
     chrome.storage.local.set(
         {
             gradeViewerData: grades,
+            gradeViewerGpa: cumulativeGpa,
         },
         () => {
             chrome.windows.create(

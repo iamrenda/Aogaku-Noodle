@@ -1,17 +1,19 @@
 :root {
     color-scheme: light;
-    --gv-bg: #ffffff;
-    --gv-surface: #ffffff;
+    --gv-bg: #f0efe9;
     --gv-card: #ffffff;
-    --gv-text: #1f2937;
-    --gv-muted: #4b5563;
-    --gv-border: #e5e7eb;
-    --gv-primary: #1b9d6f;
-    --gv-primary-dark: #457a5c;
-    --gv-secondary: #f9fafb;
-    --gv-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --gv-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --gv-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --gv-ink: #1b201c;
+    --gv-ink-soft: #3a413b;
+    --gv-muted: #9a9e97;
+    --gv-line: #ececE6;
+    --gv-green: #3f6b54;
+    --gv-green-deep: #2f5b45;
+    --gv-green-soft: #edf2ee;
+    --gv-dark: #191d18;
+    --gv-radius: 18px;
+    --gv-shadow-sm: 0 1px 2px rgba(24, 30, 24, 0.05);
+    --gv-shadow-md: 0 6px 18px rgba(24, 30, 24, 0.07);
+    --gv-shadow-lg: 0 18px 44px rgba(24, 30, 24, 0.1);
 }
 
 * {
@@ -20,342 +22,795 @@
 
 body {
     margin: 0;
-    font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    color: var(--gv-text);
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--gv-ink);
+    background: var(--gv-bg);
 }
 
-.grade-viewer-screen {
-    background-color: var(--gv-bg);
+/* ---------- Layout shell ---------- */
+
+.gv-screen {
     min-height: 100vh;
-    padding: 1.25rem;
+    background: var(--gv-bg);
+    padding: 0 0 7rem;
     display: flex;
     flex-direction: column;
+}
+
+.gv-topbar {
+    padding: 1.6rem 2.2rem;
+    border-bottom: 1px solid var(--gv-line);
+}
+
+.gv-topbar--row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 1rem;
 }
 
-.grade-viewer-header {
+.gv-topbar__actions {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1rem 1.1rem;
-    border-radius: 1.5rem;
-    background: var(--gv-surface);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: var(--gv-shadow-md);
-    border: 1px solid var(--gv-border);
-}
-
-.grade-viewer-header--detail {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.grade-viewer-kicker {
-    margin: 0;
-    font-size: 0.78rem;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gv-primary);
-}
-
-.grade-viewer-title {
-    margin: 0.2rem 0 0;
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
-    line-height: 1.1;
-}
-
-.grade-viewer-filter,
-.grade-selection-grid,
-.grade-flip-grid {
-    width: 100%;
-    max-width: 1120px;
-    margin: 0 auto;
-}
-
-.grade-viewer-filter {
-    display: flex;
+    gap: 0.6rem;
     flex-wrap: wrap;
-    gap: 0.65rem;
 }
 
-.grade-viewer-filter-button {
-    border: 1px solid var(--gv-border);
-    background: var(--gv-surface);
-    color: var(--gv-text);
+.gv-brandmark {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: var(--gv-green);
+}
+
+.gv-empty {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--gv-muted);
+    background: var(--gv-card);
+    border: 1px dashed var(--gv-line);
+    border-radius: var(--gv-radius);
+}
+
+/* ---------- Buttons / chips ---------- */
+
+.gv-pill-button {
+    border: 1px solid var(--gv-line);
+    background: var(--gv-card);
+    color: var(--gv-ink);
     border-radius: 999px;
-    padding: 0.7rem 1rem;
+    padding: 0.7rem 1.15rem;
     font-size: 0.9rem;
     font-weight: 700;
     cursor: pointer;
     box-shadow: var(--gv-shadow-sm);
     transition:
-        transform 160ms ease,
-        background-color 160ms ease,
-        border-color 160ms ease;
+        transform 150ms ease,
+        box-shadow 150ms ease;
 }
 
-.grade-viewer-filter-button:hover {
+.gv-pill-button:hover:not(:disabled) {
     transform: translateY(-1px);
-}
-
-.grade-viewer-filter-button.is-active {
-    background: var(--gv-primary);
-    color: #ffffff;
-    border-color: transparent;
-}
-
-.grade-selection-grid {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 0.95rem;
-    align-content: start;
-}
-
-.grade-selection-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding: 1rem;
-    border: 1px solid var(--gv-border);
-    border-radius: 1.35rem;
-    background: var(--gv-card);
     box-shadow: var(--gv-shadow-md);
+}
+
+.gv-pill-button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.gv-chip {
+    border: 1px solid transparent;
+    background: var(--gv-card);
+    color: var(--gv-ink);
+    border-radius: 999px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 700;
     cursor: pointer;
+    box-shadow: var(--gv-shadow-sm);
     transition:
-        transform 180ms ease,
-        box-shadow 180ms ease,
-        border-color 180ms ease;
+        background-color 150ms ease,
+        color 150ms ease;
 }
 
-.grade-selection-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--gv-shadow-lg);
+.gv-chip.is-active {
+    background: var(--gv-green);
+    color: #ffffff;
 }
 
-.grade-selection-card__top {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    align-items: flex-start;
-}
+/* ---------- Selector screen ---------- */
 
-.grade-selection-card__meta {
+.gv-selector-body {
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 1.75rem 2.2rem 0;
     display: flex;
     flex-direction: column;
-    gap: 0.4rem;
-    min-width: 0;
+    gap: 1.4rem;
 }
 
-.grade-selection-card__subject {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 800;
-    line-height: 1.35;
-}
-
-.grade-selection-card__lecturer,
-.grade-selection-card__details {
-    margin: 0;
-    color: var(--gv-muted);
-    font-size: 0.9rem;
-}
-
-.grade-selection-card__checkbox {
-    width: 1.15rem;
-    height: 1.15rem;
-    accent-color: var(--gv-primary);
-    margin-top: 0.15rem;
-}
-
-.grade-selection-card__details {
+.gv-toolbar {
     display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
-    flex-wrap: wrap;
-    padding-top: 0.15rem;
-}
-
-.grade-selection-card__badge {
-    display: inline-flex;
+    gap: 1rem;
     align-items: center;
-    justify-content: center;
-    padding: 0.35rem 0.65rem;
-    border-radius: 999px;
-    background: var(--gv-secondary);
-    color: var(--gv-text);
-    font-weight: 700;
-    font-size: 0.8rem;
+    flex-wrap: wrap;
 }
 
-.grade-viewer-footer {
-    position: sticky;
-    bottom: 0;
-    padding: 0.75rem 0 0.25rem;
+.gv-search {
+    flex: 1 1 320px;
+    min-width: 0;
+    border: 1px solid var(--gv-line);
+    background: var(--gv-card);
+    border-radius: 999px;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    color: var(--gv-ink);
+    box-shadow: var(--gv-shadow-sm);
+    outline: none;
+}
+
+.gv-search::placeholder {
+    color: var(--gv-muted);
+}
+
+.gv-search:focus {
+    border-color: var(--gv-green);
+}
+
+.gv-toolbar__actions {
     display: flex;
-    justify-content: center;
-    background: linear-gradient(180deg, rgba(246, 247, 251, 0), rgba(246, 247, 251, 0.9) 35%, rgba(246, 247, 251, 1));
+    gap: 0.6rem;
+    flex-wrap: wrap;
 }
 
-.grade-viewer-confirm-button,
-.grade-viewer-back-button {
-    border: 0;
-    border-radius: 999px;
-    font-weight: 800;
+.gv-year-filter {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.gv-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.1rem;
+}
+
+.gv-select-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: 1.25rem 1.35rem;
+    background: var(--gv-card);
+    border: 1.5px solid var(--gv-line);
+    border-radius: var(--gv-radius);
+    box-shadow: var(--gv-shadow-sm);
     cursor: pointer;
     transition:
         transform 160ms ease,
         box-shadow 160ms ease,
-        background-color 160ms ease;
+        border-color 160ms ease;
 }
 
-.grade-viewer-confirm-button {
-    min-width: 220px;
-    padding: 0.95rem 1.25rem;
-    color: #ffffff;
-    background: linear-gradient(180deg, var(--gv-primary) 0%, var(--gv-primary-dark) 100%);
-    box-shadow: var(--gv-shadow-lg);
-}
-
-.grade-viewer-back-button {
-    padding: 0.72rem 1rem;
-    background: var(--gv-secondary);
-    color: var(--gv-text);
-}
-
-.grade-viewer-confirm-button:hover,
-.grade-viewer-back-button:hover {
-    transform: translateY(-1px);
-}
-
-.grade-viewer-empty {
-    padding: 1.1rem;
-    border-radius: 1.1rem;
-    background: var(--gv-surface);
-    border: 1px dashed var(--gv-border);
-    color: var(--gv-muted);
-    text-align: center;
-}
-
-.grade-viewer-empty--detail {
-    max-width: 1120px;
-    margin: 0 auto;
-}
-
-.grade-flip-grid {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 1rem;
-    align-content: start;
-}
-
-.grade-flip-card {
-    position: relative;
-    perspective: 1400px;
-    min-height: 220px;
-    width: 100%;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: inherit;
-    text-align: left;
-    cursor: pointer;
-}
-
-.grade-flip-card__inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 220px;
-    transform-style: preserve-3d;
-    transition: transform 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.grade-flip-card.is-flipped .grade-flip-card__inner {
-    transform: rotateY(180deg);
-}
-
-.grade-flip-card__face {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding: 1rem;
-    border-radius: 1.35rem;
-    border: 1px solid var(--gv-border);
-    background: var(--gv-card);
+.gv-select-card:hover {
+    transform: translateY(-2px);
     box-shadow: var(--gv-shadow-md);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
 }
 
-.grade-flip-card__face--back {
-    transform: rotateY(180deg);
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+.gv-select-card.is-checked {
+    border-color: var(--gv-green);
+    box-shadow: 0 0 0 1px var(--gv-green);
 }
 
-.grade-flip-card__subject {
+.gv-select-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.gv-select-card__subject {
     margin: 0;
     font-size: 1.02rem;
     font-weight: 800;
     line-height: 1.35;
 }
 
-.grade-flip-card__lecturer {
-    margin: 0;
-    color: var(--gv-muted);
-}
-
-.grade-flip-card__hint {
-    margin: auto 0 0;
-    color: var(--gv-muted);
-    font-size: 0.85rem;
-}
-
-.grade-flip-card__grade-label {
-    margin: 0;
-    color: var(--gv-muted);
-    font-size: 0.9rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.grade-flip-card__grade {
-    margin: 0;
-    font-size: clamp(2rem, 8vw, 3rem);
+.gv-select-card__check {
+    flex-shrink: 0;
+    width: 1.65rem;
+    height: 1.65rem;
+    border-radius: 0.55rem;
+    border: 1.5px solid var(--gv-line);
+    background: var(--gv-card);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 0.95rem;
     font-weight: 900;
+    transition:
+        background-color 150ms ease,
+        border-color 150ms ease;
 }
 
-.grade-flip-card__meta {
-    color: var(--gv-muted);
-    font-size: 0.85rem;
+.gv-select-card.is-checked .gv-select-card__check {
+    background: var(--gv-green);
+    border-color: var(--gv-green);
+}
+
+.gv-select-card__lecturer {
     margin: 0;
+    color: var(--gv-muted);
+    font-size: 0.92rem;
 }
 
-@media (max-width: 640px) {
-    .grade-viewer-screen {
-        padding: 0.9rem;
+.gv-select-card__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.gv-select-card__year {
+    color: var(--gv-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.gv-select-card__credit {
+    background: var(--gv-green-soft);
+    color: var(--gv-green-deep);
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+/* ---------- Floating action bar ---------- */
+
+.gv-floating-bar {
+    position: fixed;
+    left: 50%;
+    bottom: 1.6rem;
+    transform: translate(-50%, 140%);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.5rem 0.5rem 0.5rem 1.6rem;
+    background: var(--gv-dark);
+    border-radius: 999px;
+    box-shadow: var(--gv-shadow-lg);
+    opacity: 0;
+    transition:
+        transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1),
+        opacity 260ms ease;
+    z-index: 20;
+}
+
+.gv-floating-bar.is-visible {
+    transform: translate(-50%, 0);
+    opacity: 1;
+}
+
+.gv-floating-bar__count {
+    color: #f4f5f2;
+    font-size: 0.95rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.gv-floating-bar__button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.85rem 1.9rem;
+    background: #6f9d80;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+        background-color 150ms ease,
+        transform 150ms ease;
+}
+
+.gv-floating-bar__button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    background: #7cab8d;
+}
+
+.gv-floating-bar__button.is-ready {
+    background: var(--gv-green);
+}
+
+.gv-floating-bar__button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* ---------- Revealer screen ---------- */
+
+.gv-reveal-grid {
+    width: 100%;
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 1.75rem 2.2rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.25rem;
+}
+
+.gv-reveal-card {
+    position: relative;
+    min-height: 180px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    perspective: 1400px;
+    transition: transform 160ms ease;
+}
+
+.gv-reveal-card:hover:not(.is-revealed) {
+    transform: translateY(-2px);
+}
+
+.gv-reveal-card.is-revealed {
+    cursor: default;
+}
+
+.gv-reveal-card__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    transform-style: preserve-3d;
+    transition: transform 620ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.gv-reveal-card.is-revealed .gv-reveal-card__inner {
+    transform: rotateY(180deg);
+}
+
+.gv-reveal-card__face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    padding: 1.4rem 1.4rem;
+    border-radius: var(--gv-radius);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+.gv-reveal-card__face--closed {
+    justify-content: space-between;
+    background: var(--gv-green);
+    color: #ffffff;
+    box-shadow: var(--gv-shadow-md);
+}
+
+.gv-reveal-card__year {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    opacity: 0.7;
+}
+
+.gv-reveal-card__subject {
+    margin: 0.6rem 0 0;
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.gv-reveal-card__hint {
+    margin: 1rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    opacity: 0.85;
+}
+
+.gv-reveal-card__face--open {
+    justify-content: space-between;
+    background: var(--gv-card);
+    color: var(--gv-ink);
+    border: 1.5px solid var(--gv-line);
+    box-shadow: var(--gv-shadow-sm);
+    transform: rotateY(180deg);
+}
+
+.gv-reveal-card__subject-open {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gv-ink-soft);
+    line-height: 1.35;
+}
+
+.gv-reveal-card__grade {
+    margin: 0.4rem 0;
+    text-align: center;
+    font-size: clamp(2.4rem, 6vw, 3.4rem);
+    font-weight: 900;
+    line-height: 1;
+}
+
+.gv-reveal-card__meta {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--gv-muted);
+}
+
+/* ---------- Summary screen ---------- */
+
+.gv-summary-card {
+    width: 100%;
+    max-width: 1040px;
+    margin: 2rem auto 0;
+    padding: 2.75rem;
+    background: var(--gv-card);
+    border-radius: 26px;
+    box-shadow: var(--gv-shadow-md);
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2.5rem;
+}
+
+.gv-summary-aside {
+    display: flex;
+    flex-direction: column;
+    padding-right: 2rem;
+    border-right: 1px solid var(--gv-line);
+}
+
+.gv-gpa-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.gv-gpa-block--term {
+    margin-top: 1.5rem;
+    padding: 1.1rem 1.35rem;
+    background: #f4f4f0;
+    border-radius: 16px;
+}
+
+.gv-gpa-label {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gv-muted);
+}
+
+.gv-gpa-label--accent {
+    color: var(--gv-green);
+}
+
+.gv-gpa-value {
+    margin: 0;
+    font-size: clamp(3rem, 7vw, 4.4rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: flex-end;
+    gap: 0.4rem;
+}
+
+.gv-gpa-value--sm {
+    font-size: clamp(2rem, 4vw, 2.6rem);
+}
+
+.gv-gpa-scale {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--gv-muted);
+    letter-spacing: 0;
+    padding-bottom: 0.5rem;
+}
+
+.gv-gpa-value--sm .gv-gpa-scale {
+    padding-bottom: 0.25rem;
+}
+
+.gv-brand-footer {
+    margin-top: auto;
+    padding-top: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+}
+
+.gv-brand-qr {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid var(--gv-line);
+    background: #ffffff;
+    padding: 3px;
+    object-fit: contain;
+}
+
+.gv-brand-name {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.gv-brand-sub {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    color: var(--gv-muted);
+    line-height: 1.5;
+}
+
+.gv-summary-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 2.5rem;
+    align-content: start;
+}
+
+.gv-summary-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.gv-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--gv-line);
+}
+
+.gv-summary-subject {
+    font-size: 0.98rem;
+    color: var(--gv-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gv-summary-grade {
+    flex-shrink: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.gv-summary-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem 1rem 0;
+}
+
+.gv-ghost-button {
+    border: 1px solid var(--gv-line);
+    background: var(--gv-card);
+    color: var(--gv-ink);
+    border-radius: 999px;
+    padding: 0.95rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--gv-shadow-sm);
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.gv-ghost-button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--gv-shadow-md);
+}
+
+.gv-primary-button {
+    border: 0;
+    border-radius: 999px;
+    padding: 0.95rem 2rem;
+    background: var(--gv-green);
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--gv-shadow-md);
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease,
+        opacity 150ms ease;
+}
+
+.gv-primary-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--gv-shadow-lg);
+}
+
+.gv-primary-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* ---------- Export card (fixed-size, offscreen, PNG capture target) ---------- */
+/* Pixel units throughout — the exported image must render identically
+   regardless of the page's font-size/zoom, since html-to-image rasterizes
+   this node exactly as laid out. */
+
+.gv-export-offscreen {
+    position: fixed;
+    top: 0;
+    left: -100000px;
+    pointer-events: none;
+}
+
+.gv-export-card {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    background: #ffffff;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1b201c;
+}
+
+.gv-export-header {
+    display: flex;
+    gap: 48px;
+}
+
+.gv-export-gpa-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.gv-export-gpa-label {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #9a9e97;
+}
+
+.gv-export-gpa-label--accent {
+    color: #3f6b54;
+}
+
+.gv-export-gpa-value {
+    margin: 0;
+    font-size: 84px;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.gv-export-gpa-value--sm {
+    font-size: 56px;
+}
+
+.gv-export-gpa-scale {
+    font-size: 20px;
+    font-weight: 600;
+    color: #9a9e97;
+    padding-bottom: 10px;
+}
+
+.gv-export-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 48px;
+    align-content: start;
+    border-top: 1px solid #ececE6;
+    padding-top: 8px;
+}
+
+.gv-export-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.gv-export-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 1px solid #ececE6;
+    overflow: hidden;
+}
+
+.gv-export-subject {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gv-export-grade {
+    flex-shrink: 0;
+    font-weight: 800;
+}
+
+.gv-export-row--more .gv-export-subject {
+    color: #9a9e97;
+    font-weight: 700;
+}
+
+.gv-export-footer {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    border-top: 1px solid #ececE6;
+    padding-top: 24px;
+}
+
+.gv-export-qr {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid #ececE6;
+    background: #ffffff;
+    padding: 4px;
+    object-fit: contain;
+}
+
+.gv-export-brand-name {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.gv-export-brand-sub {
+    margin: 6px 0 0;
+    font-size: 16px;
+    color: #9a9e97;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 820px) {
+    .gv-topbar,
+    .gv-selector-body,
+    .gv-reveal-grid {
+        padding-left: 1.25rem;
+        padding-right: 1.25rem;
     }
 
-    .grade-viewer-header--detail {
-        align-items: flex-start;
-        flex-direction: column;
+    .gv-summary-card {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 1.75rem;
     }
 
-    .grade-viewer-confirm-button {
-        width: 100%;
+    .gv-summary-aside {
+        padding-right: 0;
+        border-right: 0;
+        border-bottom: 1px solid var(--gv-line);
+        padding-bottom: 1.75rem;
+    }
+
+    .gv-brand-footer {
+        margin-top: 1.5rem;
+    }
+}
+
+@media (max-width: 560px) {
+    .gv-summary-list {
+        grid-template-columns: 1fr;
+        gap: 0;
     }
 }

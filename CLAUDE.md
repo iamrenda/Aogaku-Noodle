@@ -46,7 +46,7 @@ To test the extension: load the `dist/` folder as an unpacked extension in Chrom
 This extension spans three hosts, not just Moodle:
 
 - **`agulms45.aim.aoyama.ac.jp`** (Moodle) — main content script (`content.js`); source of courses & assignments.
-- **`aguinfo.jm.aoyama.ac.jp/HL/tuutisho.aspx`** (grades notification page) — `grade-page.js` blurs the native grade table (`.tuuti-container`), scrapes rows (`scrapeGrades.js`), and shows an overlay (`overlay.js`) to either reveal grades in place or open the standalone grade viewer window. Grades are **not** fetched via the Moodle API.
+- **`aguinfo.jm.aoyama.ac.jp/HL/tuutisho.aspx`** (grades notification page) — `grade-page.js` blurs the native grade table (`.tuuti-container`), scrapes rows (`scrapeGrades.js`) and the cumulative GPA (`#cph_content_lbl_gpa`), and shows an overlay (`overlay.js`) to either reveal grades in place or open the standalone grade viewer window. Grades are **not** fetched via the Moodle API.
 - **`syllabus.aoyama.ac.jp`** — syllabus search; fetched via the background `FETCH_SYLLABUS` proxy (see Scripts table).
 
 ### Storage Keys (`chrome.storage.local`)
@@ -60,6 +60,7 @@ This extension spans three hosts, not just Moodle:
 | `syllabuses` | `fetchAllSyllabuses.js`, `SyllabusPickerModal.jsx` | syllabus search results |
 | `selectedMajor` | `MajorPicker` / `Settings.jsx` | user's 学科 label; shown in dedicated 学科設定 section |
 | `gradeViewerData` | `background.js` (on `OPEN_GRADE_VIEWER`) | scraped grade rows for the viewer window |
+| `gradeViewerGpa` | `background.js` (on `OPEN_GRADE_VIEWER`) | cumulative GPA scraped from `#cph_content_lbl_gpa`, shown as 累積GPA on the viewer's summary screen |
 | `defaultTab`, `autoClosePanel` | `Settings.jsx` | general preferences (一般設定 section) |
 | `showSubmissionFeedback` | `Settings.jsx` | submission effect toggle; in リニューアル設定, gated by `extensionEnabled` |
 | `extensionEnabled` | `Settings.jsx` | global on/off for all injections; in 拡張機能 section (default: true) |
@@ -88,6 +89,18 @@ Three React apps are mounted in sequence on the Moodle home page:
 Both surfaces merge user-added **custom assignments** (`customAssignments` storage key) into their lists via `activeCustomAssignments.js`. Custom cards render like fetched ones but show a check button to mark complete (see `AddAssignmentModal.jsx`).
 
 `HomeTabsApp` uses CSS class `home-tabs__tab--active` (not `active`) to avoid Bootstrap's `.active` button repaint, which makes tab text disappear against the background.
+
+### Grade Viewer (`grade-viewer.html` / `content/src/grade-viewer/`)
+
+The standalone popup window (opened via `OPEN_GRADE_VIEWER`) walks the user through three screens, orchestrated by `App.jsx`:
+
+1. **Selector** (`SelectorScreen.jsx`) — search + year-chip filtering over scraped grade rows; user checks which subjects to include, confirmed via a floating action bar.
+2. **Revealer** (`RevealerScreen.jsx`) — each selected subject is a `RevealCard` that 3D-flips (CSS `rotateY`) from a closed "TAP TO OPEN" face to the grade on click. `結果を見る` (see results) stays disabled until every card has been revealed.
+3. **Summary** (`SummaryScreen.jsx`) — shows both GPAs (see below) with a count-up animation (`useCountUp.js`, ease-out from 0), the full subject/grade list, and an image-export button.
+
+GPA math lives in `util/gpa.js`, following 青学's official grade legend and formula (`grade_evaluation.html`): AA/A/B/C → 4/3/2/1 points weighted by credits; XX (不合格) and X (欠席等評価不能) count as 0 points but still count in the denominator; 合格, ++/**（認定）, FF（未評価）, and W（履修取消）are excluded entirely. Handles fullwidth grade characters (`Ａ`, `ＸＸ`, etc.) via normalization. Two GPAs are shown: **累積GPA** (cumulative, scraped verbatim from `#cph_content_lbl_gpa`, stored under `gradeViewerGpa`) and **今期のGPA** (computed live over whatever subjects are currently selected).
+
+Image export (`ExportCard.jsx`, using the `html-to-image` dependency) renders an offscreen, fixed-size **1080×1350px** card regardless of how many subjects are selected — row height/font-size shrink to fit, and beyond ~57 entries the list truncates with a "ほか N 件" row. The GPA shown on the exported image is always computed over the *full* selection, not just the visible/truncated rows.
 
 ### Content Script Injection Pattern
 

@@ -27,6 +27,18 @@ function waitForElement(selector, callback) {
     });
 }
 
+function scrapeCumulativeGpa(doc = document) {
+    const el = doc.querySelector("#cph_content_lbl_gpa");
+
+    if (!el) {
+        return null;
+    }
+
+    const value = parseFloat(el.textContent);
+
+    return Number.isFinite(value) ? value : null;
+}
+
 function createButton(label, variant, onClick) {
     const button = document.createElement("button");
     button.type = "button";
@@ -121,6 +133,7 @@ function initGradeViewerOverlay({ scrapeGradeRows }) {
                 chrome.runtime.sendMessage({
                     type: "OPEN_GRADE_VIEWER",
                     grades,
+                    cumulativeGpa: scrapeCumulativeGpa(document),
                     sourceUrl: window.location.href,
                 });
                 status.textContent =

@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "青学 Noodle",
+  "version": "0.1.0",
+  "description": "青山学院大学非公式 Chrome 拡張機能",
+  "icons": {
+    "32": "icons/icon-32.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_title": "青学 Noodle",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "32": "icons/icon-32.png",
+      "128": "icons/icon-128.png"
+    }
+  }
+}

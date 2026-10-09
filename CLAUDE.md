@@ -11,6 +11,8 @@ Chrome Manifest V3 extension for Aoyama Gakuin University's Moodle LMS (`agulms4
 
 - `npm run dev`: dev build with HMR into `dist/`
 - `npm run build`: type-check, then production build into `dist/`
+- `npm run lint`: ESLint (typescript-eslint + react-hooks); config in `eslint.config.js`
+- **Run `npm run build` at the end of every assistant turn that changes files**, and report failures.
 - Load in Chrome: `chrome://extensions` > Developer mode > Load unpacked > select `dist/`
 
 ## Layout

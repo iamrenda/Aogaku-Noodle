@@ -1,18 +1,27 @@
 {
   "manifest_version": 3,
-  "name": "青学 Noodle",
+  "name": "青学Noodle",
   "version": "2.0.0",
-  "description": "青山学院大学非公式 Chrome 拡張機能",
+  "description": "青山学院大学非公式LMS「Moodle」をもっと使いやすくする Chrome 拡張機能",
+  "permissions": [
+    "sidePanel"
+  ],
   "icons": {
     "32": "icons/icon-32.png",
     "128": "icons/icon-128.png"
   },
   "action": {
-    "default_title": "青学 Noodle",
-    "default_popup": "popup.html",
+    "default_title": "青学Noodle",
     "default_icon": {
       "32": "icons/icon-32.png",
       "128": "icons/icon-128.png"
     }
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
   }
 }

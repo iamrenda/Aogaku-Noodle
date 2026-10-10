@@ -14,8 +14,14 @@ export default function CourseCard({ course }: { course: Course }) {
         <span className="w-8 shrink-0 text-center text-4xl leading-none font-normal text-num">{periodLabel}</span>
       )}
       <span className="flex min-w-0 flex-col gap-1">
-        <span className="text-base leading-snug font-bold">{course.title}</span>
-        {course.lecturer && <span className="text-[13px] text-ink-soft">{course.lecturer}</span>}
+        <span className="line-clamp-2 text-base leading-snug font-bold" title={course.title}>
+          {course.title}
+        </span>
+        {course.lecturer && (
+          <span className="truncate text-[13px] text-ink-soft" title={course.lecturer}>
+            {course.lecturer}
+          </span>
+        )}
       </span>
     </a>
   );

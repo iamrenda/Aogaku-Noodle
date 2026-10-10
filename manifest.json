@@ -4,7 +4,11 @@
   "version": "2.0.0",
   "description": "青山学院大学非公式LMS「Moodle」をもっと使いやすくする Chrome 拡張機能",
   "permissions": [
-    "sidePanel"
+    "sidePanel",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://agulms45.aim.aoyama.ac.jp/*"
   ],
   "icons": {
     "32": "icons/icon-32.png",

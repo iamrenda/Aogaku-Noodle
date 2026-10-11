@@ -3,6 +3,7 @@ import AssignmentCard from "../components/AssignmentCard";
 import Pagination from "../components/Pagination";
 import RefreshPrompt from "../components/RefreshPrompt";
 import useAssignments from "../hooks/useAssignments";
+import useIsOnMoodle from "../hooks/useIsOnMoodle";
 import daysLeft from "../utils/daysLeft";
 
 const PAGE_SIZE = 20;
@@ -16,6 +17,7 @@ const sections = [
 
 export default function Assignments() {
   const { assignments, error, isRefreshing, refresh } = useAssignments();
+  const isOnMoodle = useIsOnMoodle();
   const [page, setPage] = useState(0);
 
   if (assignments === null) return null;
@@ -37,14 +39,16 @@ export default function Assignments() {
         <p className="m-0 text-[13px] text-alert">
           {error && "更新できませんでした。Moodleを開いた状態でもう一度お試しください。"}
         </p>
-        <button
-          type="button"
-          onClick={refresh}
-          disabled={isRefreshing}
-          className="shrink-0 rounded-lg border border-rule bg-white px-3 py-1.5 text-[13px] font-bold text-ink transition-colors hover:bg-wash disabled:opacity-50"
-        >
-          {isRefreshing ? "取得中..." : "更新"}
-        </button>
+        {isOnMoodle && (
+          <button
+            type="button"
+            onClick={refresh}
+            disabled={isRefreshing}
+            className="shrink-0 rounded-lg border border-rule bg-white px-3 py-1.5 text-[13px] font-bold text-ink transition-colors hover:bg-wash disabled:opacity-50"
+          >
+            {isRefreshing ? "取得中..." : "更新"}
+          </button>
+        )}
       </div>
 
       {sections.map(({ title, match, overdue }) => {

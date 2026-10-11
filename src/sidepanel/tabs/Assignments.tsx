@@ -4,7 +4,9 @@ import Pagination from "../components/Pagination";
 import RefreshPrompt from "../components/RefreshPrompt";
 import useAssignments from "../hooks/useAssignments";
 import useIsOnMoodle from "../hooks/useIsOnMoodle";
+import useNow from "../hooks/useNow";
 import daysLeft from "../utils/daysLeft";
+import formatElapsed from "../utils/formatElapsed";
 
 const PAGE_SIZE = 20;
 
@@ -16,8 +18,10 @@ const sections = [
 ];
 
 export default function Assignments() {
-  const { assignments, error, isRefreshing, refresh } = useAssignments();
+  const { assignments, updatedAt, error, isRefreshing, refresh } = useAssignments();
   const isOnMoodle = useIsOnMoodle();
+  const now = useNow();
+  const elapsed = updatedAt === null ? null : formatElapsed(updatedAt, now);
   const [page, setPage] = useState(0);
 
   if (assignments === null) return null;
@@ -35,10 +39,16 @@ export default function Assignments() {
 
   return (
     <div className="min-h-screen bg-white px-4 pt-2 pb-8">
-      <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="m-0 text-[13px] text-alert">
-          {error && "更新できませんでした。Moodleを開いた状態でもう一度お試しください。"}
-        </p>
+      <div className="mb-4 flex items-center gap-3">
+        {error ? (
+          <p className="m-0 text-[13px] text-alert">
+            更新できませんでした。Moodleを開いた状態でもう一度お試しください。
+          </p>
+        ) : (
+          <p className={`m-0 text-[13px] ml-auto ${elapsed?.stale ? "font-bold text-alert" : "text-ink-soft"}`}>
+            {elapsed && `最終更新: ${elapsed.text}`}
+          </p>
+        )}
         {isOnMoodle && (
           <button
             type="button"

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import AssignmentCard from "../components/AssignmentCard";
 import Pagination from "../components/Pagination";
-import mockAssignments from "../data/mockAssignments";
+import RefreshPrompt from "../components/RefreshPrompt";
+import useAssignments from "../hooks/useAssignments";
 import daysLeft from "../utils/daysLeft";
 
 const PAGE_SIZE = 20;
@@ -14,14 +15,38 @@ const sections = [
 ];
 
 export default function Assignments() {
+  const { assignments, error, isRefreshing, refresh } = useAssignments();
   const [page, setPage] = useState(0);
 
-  const sortedAssignmentsByDue = [...mockAssignments].sort((a, b) => a.dueAt - b.dueAt);
-  const pageCount = Math.ceil(sortedAssignmentsByDue.length / PAGE_SIZE);
-  const pageItems = sortedAssignmentsByDue.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+  if (assignments === null) return null;
+
+  if (assignments.length === 0) {
+    return (
+      <div className="min-h-screen bg-white px-4 pt-2 pb-8">
+        <RefreshPrompt subject="課題" error={error} isRefreshing={isRefreshing} onRefresh={refresh} />
+      </div>
+    );
+  }
+
+  const pageCount = Math.ceil(assignments.length / PAGE_SIZE);
+  const pageItems = assignments.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-white px-4 pt-2 pb-8">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <p className="m-0 text-[13px] text-alert">
+          {error && "更新できませんでした。Moodleを開いた状態でもう一度お試しください。"}
+        </p>
+        <button
+          type="button"
+          onClick={refresh}
+          disabled={isRefreshing}
+          className="shrink-0 rounded-lg border border-rule bg-white px-3 py-1.5 text-[13px] font-bold text-ink transition-colors hover:bg-wash disabled:opacity-50"
+        >
+          {isRefreshing ? "取得中..." : "更新"}
+        </button>
+      </div>
+
       {sections.map(({ title, match, overdue }) => {
         const items = pageItems.filter((a) => match(daysLeft(a.dueAt)));
 

@@ -29,6 +29,10 @@ Chrome Manifest V3 extension for Aoyama Gakuin University's Moodle LMS (`agulms4
 
 The side panel fetches only when the user presses the refresh button, which is shown only while no courses are saved. `fetchCourses` finds the active tab; if it is not on `agulms45.aim.aoyama.ac.jp` it throws `NotOnMoodleError`. Otherwise it runs a function in the page's main world via `chrome.scripting.executeScript` (reads `M.cfg.sesskey`, calls `/lib/ajax/service.php`), parses the result and saves it to `chrome.storage.local` under `courses`. Course names follow `(曜日)(N)限_日本語名_English` or `(曜日)オンライン_...`; anything else is a special course grouped by its Moodle category. Lecturers come from `idnumber` (`3321_26101森田 武史`) and may be null.
 
+## Data flow (assignments)
+
+The 課題 tab has an always-visible 更新 button. `useAssignments.refresh` reads the saved `courses` (so courses must be saved first), calls `fetchAssignments` and saves the result to `chrome.storage.local` under `assignments`. `fetchAssignments` makes one `core_calendar_get_action_events_by_courses` call for all course ids (`timesortfrom` 0, 50 events per course), keeps only `assign`/`questionnaire`/`resource` events that are not `open` (start dates), and sorts by deadline. The panel pages the saved list 20 at a time.
+
 ## Conventions
 
 - One component per file, grouped in folders (`components/`, `tabs/`, `data/`) so the owner can read each piece. Readability beats a low file count; still avoid extra config files.

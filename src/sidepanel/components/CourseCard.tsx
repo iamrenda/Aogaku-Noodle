@@ -8,7 +8,7 @@ export default function CourseCard({ course }: { course: Course }) {
       href={course.link}
       target="_blank"
       rel="noreferrer"
-      className="flex items-center gap-4 rounded-xl border border-rule bg-white px-4 py-3.5 text-ink no-underline transition-colors hover:bg-wash focus-visible:bg-wash"
+      className="flex items-center gap-4 rounded-xl border border-rule bg-white px-4 py-3.5 shadow-md shadow-ink/10 text-ink no-underline transition-colors hover:bg-wash focus-visible:bg-wash"
     >
       {periodLabel !== null && (
         <span className="w-8 shrink-0 text-center text-4xl leading-none font-normal text-num">{periodLabel}</span>

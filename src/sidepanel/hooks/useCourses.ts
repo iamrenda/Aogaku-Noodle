@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import fetchCourses, { NotOnMoodleError } from "../api/fetchCourses";
+import { NotOnMoodleError } from "../api/callMoodleApi";
+import fetchCourses from "../api/fetchCourses";
 import type { Course } from "../types/course";
 
 export type RefreshError = "not-on-moodle" | "failed";

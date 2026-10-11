@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import fetchAssignments from "../api/fetchAssignments";
-import { NotOnMoodleError } from "../api/fetchCourses";
+import { NotOnMoodleError } from "../api/callMoodleApi";
 import type { Assignment } from "../types/assignment";
 import type { Course } from "../types/course";
 import type { RefreshError } from "./useCourses";

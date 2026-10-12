@@ -1,0 +1,14 @@
+/* Design tokens shared by the side panel (index.css) and injected UI (content/content.css) */
+@theme static {
+  --font-sans: "Hiragino Sans", "Yu Gothic UI", "Meiryo UI", "Noto Sans JP", system-ui, sans-serif;
+
+  --color-ink: #1b2a47;
+  --color-ink-soft: #5a6882;
+  --color-num: #34619a;
+  --color-rule: #dde3ec;
+  --color-wash: #f1f3f6;
+  --color-brand: #0d8a55;
+  --color-brand-deep: #0a6b43;
+  --color-alert: #c3271f;
+  --color-warn: #f2a900;
+}

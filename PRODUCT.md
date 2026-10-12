@@ -31,12 +31,14 @@ Used while browsing Moodle on desktop Chrome, and from the side panel (about 350
 v2.0.0 is a from-scratch rewrite of the v1 extension (old source at `C:\Users\renwa\Desktop\aogaku_noodle`) so the owner understands every part. Some v1 features broke after an LMS update, so Moodle selectors and API responses must be re-verified, not copied.
 
 In scope for 2.0.0:
+
 - Side panel: courses list (grouped by day, kanji day names), syllabus search, assignments (sorted by deadline).
 - Quick access on the LMS home page: today's courses and upcoming assignments.
 
 Out of scope for 2.0.0 (not selected by the owner; do not port): grade viewer, custom/hidden assignments and courses, submission confetti, and any other v1 feature not listed above. The timetable view on `/my/courses.php` was not confirmed in this round and stays undecided.
 
 Constraints:
+
 - Only the permissions a feature needs. No data leaves the browser except requests to AGU's own servers.
 - Moodle's markup and API are not ours and change; keep selectors centralized.
 - Injected UI must not leak styles into or inherit styles from Moodle.

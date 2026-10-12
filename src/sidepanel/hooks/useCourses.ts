@@ -15,7 +15,9 @@ export default function useCourses() {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    chrome.storage.local.get("courses").then((saved) => setCourses((saved.courses as Course[] | undefined) ?? []));
+    chrome.storage.local
+      .get("courses")
+      .then((saved) => setCourses((saved.courses as Course[] | undefined) ?? []));
 
     const onChanged = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
       if (area === "local" && changes.courses) {

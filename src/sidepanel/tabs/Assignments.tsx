@@ -29,7 +29,12 @@ export default function Assignments() {
   if (assignments.length === 0) {
     return (
       <div className="min-h-screen bg-white px-4 pt-2 pb-8">
-        <RefreshPrompt subject="課題" error={error} isRefreshing={isRefreshing} onRefresh={refresh} />
+        <RefreshPrompt
+          subject="課題"
+          error={error}
+          isRefreshing={isRefreshing}
+          onRefresh={refresh}
+        />
       </div>
     );
   }
@@ -45,7 +50,9 @@ export default function Assignments() {
             更新できませんでした。Moodleを開いた状態でもう一度お試しください。
           </p>
         ) : (
-          <p className={`m-0 text-[13px] ml-auto ${elapsed?.stale ? "font-bold text-alert" : "text-ink-soft"}`}>
+          <p
+            className={`m-0 text-[13px] ml-auto ${elapsed?.stale ? "font-bold text-alert" : "text-ink-soft"}`}
+          >
             {elapsed && `最終更新: ${elapsed.text}`}
           </p>
         )}

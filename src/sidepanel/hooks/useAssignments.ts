@@ -25,8 +25,10 @@ export default function useAssignments() {
 
     const onChanged = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
       if (area !== "local") return;
-      if (changes.assignments) setAssignments((changes.assignments.newValue as Assignment[] | undefined) ?? []);
-      if (changes.assignmentsUpdatedAt) setUpdatedAt((changes.assignmentsUpdatedAt.newValue as number | undefined) ?? null);
+      if (changes.assignments)
+        setAssignments((changes.assignments.newValue as Assignment[] | undefined) ?? []);
+      if (changes.assignmentsUpdatedAt)
+        setUpdatedAt((changes.assignmentsUpdatedAt.newValue as number | undefined) ?? null);
     };
     chrome.storage.onChanged.addListener(onChanged);
     return () => chrome.storage.onChanged.removeListener(onChanged);

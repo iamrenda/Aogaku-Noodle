@@ -11,10 +11,13 @@ const EVENTS_PER_COURSE = 50;
  * @returns assignments sorted by deadline
  */
 export default async function fetchAssignments(courseIds: number[]): Promise<Assignment[]> {
-  const data = await callMoodleApi<{ groupedbycourse?: { events?: RawAssignmentEvent[] }[] } | undefined>(
-    "core_calendar_get_action_events_by_courses",
-    { courseids: courseIds, timesortfrom: 0, limitnum: EVENTS_PER_COURSE },
-  );
+  const data = await callMoodleApi<
+    { groupedbycourse?: { events?: RawAssignmentEvent[] }[] } | undefined
+  >("core_calendar_get_action_events_by_courses", {
+    courseids: courseIds,
+    timesortfrom: 0,
+    limitnum: EVENTS_PER_COURSE,
+  });
   const events = (data?.groupedbycourse ?? []).flatMap((group) => group.events ?? []);
 
   return (

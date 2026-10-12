@@ -10,8 +10,10 @@ type Props = {
 
 const MESSAGES: Record<AssignmentsError | "empty", (subject: string) => string> = {
   empty: (s) => `${s}データがありません。Moodleを開いた状態で「${s}を更新」を押してください。`,
-  "not-on-moodle": () => "Moodleのページが開かれていません。Moodleを開いてからもう一度更新してください。",
-  failed: (s) => `${s}を取得できませんでした。Moodleにログインしているか確認して、もう一度お試しください。`,
+  "not-on-moodle": () =>
+    "Moodleのページが開かれていません。Moodleを開いてからもう一度更新してください。",
+  failed: (s) =>
+    `${s}を取得できませんでした。Moodleにログインしているか確認して、もう一度お試しください。`,
   "no-courses": () => "講義データがありません。先に講義タブで講義を更新してください。",
 };
 

@@ -6,7 +6,10 @@ export class FetchFailedError extends Error {}
 type PageResult = { data: unknown } | { error: string };
 
 // Use iff the user is on a Moodle page
-async function requestInPage(methodname: string, args: Record<string, unknown>): Promise<PageResult> {
+async function requestInPage(
+  methodname: string,
+  args: Record<string, unknown>,
+): Promise<PageResult> {
   const sesskey = (window as unknown as { M?: { cfg?: { sesskey?: string } } }).M?.cfg?.sesskey;
 
   if (!sesskey) return { error: "sesskey not found" };
@@ -32,9 +35,13 @@ async function requestInPage(methodname: string, args: Record<string, unknown>):
  * @throws FetchFailedError: the request failed
  * @returns the `data` of the response; the caller is responsible for its shape
  */
-export default async function callMoodleApi<T>(methodname: string, args: Record<string, unknown>): Promise<T> {
+export default async function callMoodleApi<T>(
+  methodname: string,
+  args: Record<string, unknown>,
+): Promise<T> {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  if (tab?.id === undefined || !tab.url?.startsWith(MOODLE_ORIGIN_URL)) throw new NotOnMoodleError();
+  if (tab?.id === undefined || !tab.url?.startsWith(MOODLE_ORIGIN_URL))
+    throw new NotOnMoodleError();
 
   let result: PageResult | undefined;
   try {

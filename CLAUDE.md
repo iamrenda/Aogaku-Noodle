@@ -38,4 +38,5 @@ The 課題 tab has an always-visible 更新 button. `useAssignments.refresh` rea
 - One component per file, grouped in folders (`components/`, `tabs/`, `data/`) so the owner can read each piece. Readability beats a low file count; still avoid extra config files.
 - Ask the owner before adding any dependency, and explain why it is needed.
 - Moodle pages are not ours: injected UI must not leak styles into or inherit styles from the host page (consider Shadow DOM for injected React UI, and Tailwind's preflight will otherwise affect the page).
-- Only request the permissions and host permissions a feature actually needs. Current: `sidePanel`, `storage`, `scripting`, host `https://agulms45.aim.aoyama.ac.jp/*`.
+- Only request the permissions and host permissions a feature actually needs. Current: `sidePanel`, `storage`, host `https://agulms45.aim.aoyama.ac.jp/*`.
+- Never add a permission or host permission on your own. Propose it to the owner first and explain why the feature needs it; add it only after the owner approves.

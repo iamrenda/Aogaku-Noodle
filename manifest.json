@@ -19,6 +19,13 @@
   "side_panel": {
     "default_path": "sidepanel.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://agulms45.aim.aoyama.ac.jp/my/courses.php"],
+      "js": ["src/content/courses.tsx"],
+      "run_at": "document_idle"
+    }
+  ],
   "background": {
     "service_worker": "src/background.ts",
     "type": "module"

@@ -2,7 +2,7 @@ import type { RawCourse } from "./course";
 
 export type AssignmentModule = "assign" | "questionnaire" | "resource";
 
-// Slimmed-down Moodle calendar action event (see requestEventsInPage)
+// Slimmed-down Moodle calendar action event (core_calendar_get_action_events_by_timesort)
 export type RawAssignmentEvent = {
   id: number;
   activityname: string;

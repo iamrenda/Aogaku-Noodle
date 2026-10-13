@@ -9,7 +9,10 @@ export default function useIsOnMoodle() {
 
   useEffect(() => {
     const check = async () => {
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      const [tab] = await chrome.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
       setIsOnMoodle(tab?.url?.startsWith(MOODLE_ORIGIN_URL) ?? false);
     };
     check();

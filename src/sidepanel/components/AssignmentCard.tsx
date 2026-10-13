@@ -19,14 +19,19 @@ export default function AssignmentCard({ assignment }: { assignment: Assignment 
           <span className={`text-xl leading-none font-bold ${numColor}`}>今日</span>
         ) : (
           <>
-            <span className={`text-4xl leading-none font-normal ${numColor}`}>{Math.abs(days)}</span>
+            <span className={`text-4xl leading-none font-normal ${numColor}`}>
+              {Math.abs(days)}
+            </span>
             <span className="mt-1 text-[11px] text-ink-soft">{days < 0 ? "日超過" : "日後"}</span>
           </>
         )}
       </div>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
-          <span className="line-clamp-2 min-w-0 text-base leading-snug font-bold" title={assignment.title}>
+          <span
+            className="line-clamp-2 min-w-0 text-base leading-snug font-bold"
+            title={assignment.title}
+          >
             {assignment.title}
           </span>
           <span className="shrink-0 rounded-md border border-rule px-1.5 py-0.5 text-[11px] leading-none text-ink-soft">
@@ -36,7 +41,9 @@ export default function AssignmentCard({ assignment }: { assignment: Assignment 
         <span className="truncate text-[14px] text-ink-soft" title={assignment.courseName}>
           {assignment.courseName}
         </span>
-        <span className="flex items-center gap-1 text-[13px] text-ink-soft">{formatDue(assignment.dueAt)} 締切</span>
+        <span className="flex items-center gap-1 text-[13px] text-ink-soft">
+          {formatDue(assignment.dueAt)} 締切
+        </span>
       </div>
     </a>
   );

@@ -9,7 +9,13 @@ import callMoodleApi from "./callMoodleApi";
 export default async function fetchCourses(): Promise<Course[]> {
   const data = await callMoodleApi<{ courses?: RawCourse[] } | undefined>(
     "core_course_get_enrolled_courses_by_timeline_classification",
-    { offset: 0, limit: 0, classification: "inprogress", sort: "fullname", customfieldname: "week" },
+    {
+      offset: 0,
+      limit: 0,
+      classification: "inprogress",
+      sort: "fullname",
+      customfieldname: "week",
+    },
   );
   return (data?.courses ?? []).map(parseCourse);
 }

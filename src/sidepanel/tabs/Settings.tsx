@@ -1,6 +1,11 @@
 export default function Settings() {
   const deleteData = async () => {
-    if (!window.confirm("保存されているデータ（講義・課題）をすべて削除しますか？この操作は元に戻せません。")) return;
+    if (
+      !window.confirm(
+        "保存されているデータ（講義・課題）をすべて削除しますか？この操作は元に戻せません。",
+      )
+    )
+      return;
     await chrome.storage.local.clear();
     window.alert("保存データを削除しました。");
   };
@@ -9,7 +14,9 @@ export default function Settings() {
     // 80px is the height of the sticky tab bar
     <div className="flex min-h-[calc(100vh-80px)] flex-col bg-white px-4 pt-2 pb-6">
       <section>
-        <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-alert">データの削除</h2>
+        <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-alert">
+          データの削除
+        </h2>
         <p className="m-0 mt-3 text-[13px] text-ink-soft">
           この拡張機能が保存した講義と課題のデータをすべて削除します。
         </p>

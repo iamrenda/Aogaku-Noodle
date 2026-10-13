@@ -12,13 +12,23 @@ export default function Pagination({ page, pageCount, onChange }: Props) {
 
   return (
     <nav className="mt-6 flex items-center justify-between" aria-label="ページ">
-      <button type="button" className={buttonClass} disabled={page === 0} onClick={() => onChange(page - 1)}>
+      <button
+        type="button"
+        className={buttonClass}
+        disabled={page === 0}
+        onClick={() => onChange(page - 1)}
+      >
         前へ
       </button>
       <span className="text-[13px] text-ink-soft">
         {page + 1} / {pageCount}
       </span>
-      <button type="button" className={buttonClass} disabled={page === pageCount - 1} onClick={() => onChange(page + 1)}>
+      <button
+        type="button"
+        className={buttonClass}
+        disabled={page === pageCount - 1}
+        onClick={() => onChange(page + 1)}
+      >
         次へ
       </button>
     </nav>

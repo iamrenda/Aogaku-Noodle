@@ -31,7 +31,13 @@ export default function parseCourse(raw: RawCourse): Course {
   const match = raw.fullname.match(NAME_PREFIX);
 
   if (!match) {
-    return { ...base, title: raw.fullname, day: null, period: null, isOnline: false };
+    return {
+      ...base,
+      title: raw.fullname,
+      day: null,
+      period: null,
+      isOnline: false,
+    };
   }
 
   const [prefix, dayChar, periodChar] = match;

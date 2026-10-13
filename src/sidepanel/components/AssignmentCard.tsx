@@ -1,4 +1,4 @@
-import { MODULE_LABELS } from "../const/moduleLabels";
+import { moduleLabel } from "../const/moduleLabels";
 import type { Assignment } from "../types/assignment";
 import daysLeft from "../utils/daysLeft";
 import formatDue from "../utils/formatDue";
@@ -46,7 +46,7 @@ export default function AssignmentCard({ assignment, isHidden, onToggleHidden }:
               {assignment.title}
             </span>
             <span className="shrink-0 rounded-md border border-rule px-1.5 py-0.5 text-[11px] leading-none text-ink-soft">
-              {MODULE_LABELS[assignment.module]}
+              {moduleLabel(assignment.module)}
             </span>
           </div>
           <span className="truncate text-[14px] text-ink-soft" title={assignment.courseName}>

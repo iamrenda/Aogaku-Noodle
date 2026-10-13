@@ -1,5 +1,4 @@
 import { PAGE_SIZE } from "../const/assignments";
-import { MODULE_LABELS } from "../const/moduleLabels";
 import type { Assignment, RawAssignmentEvent } from "../types/assignment";
 import parseAssignment from "../utils/parseAssignment";
 import callMoodleApi, { NotOnMoodleError } from "./callMoodleApi";
@@ -7,7 +6,7 @@ import callMoodleApi, { NotOnMoodleError } from "./callMoodleApi";
 const EVENTS_PER_CALL = 50;
 const MAX_ROUNDS = 20;
 
-type EventsResponse = { events?: RawAssignmentEvent[]; lastid?: number | null } | undefined;
+type EventsResponse = { events?: RawAssignmentEvent[] } | undefined;
 
 export type FetchedAssignments = {
   assignments: Assignment[];
@@ -28,6 +27,7 @@ export default async function fetchAssignments(
 ): Promise<FetchedAssignments> {
   const wantedCourses = new Set(courseIds);
   const found = new Map<number, Assignment>();
+  let timesortFrom = 0;
   let afterEventId: number | undefined;
   let coveredUntil = 0;
 
@@ -35,7 +35,7 @@ export default async function fetchAssignments(
     let data: EventsResponse;
     try {
       data = await callMoodleApi<EventsResponse>("core_calendar_get_action_events_by_timesort", {
-        timesortfrom: 0,
+        timesortfrom: timesortFrom,
         limitnum: EVENTS_PER_CALL,
         ...(afterEventId === undefined ? {} : { aftereventid: afterEventId }),
       });
@@ -58,7 +58,6 @@ export default async function fetchAssignments(
       // "open" events only say when something starts. The deadline is the "due" or "close" event.
       // "gradingdue" is the teacher's grading deadline, not the student's
       if (event.eventtype === "open" || event.eventtype === "gradingdue") continue;
-      if (!Object.hasOwn(MODULE_LABELS, event.modulename)) continue;
       // The API returns the events of every enrolled course, not only the saved ones
       if (!wantedCourses.has(event.course.id)) continue;
       const assignment = parseAssignment(event);
@@ -70,8 +69,12 @@ export default async function fetchAssignments(
 
     // Moodle can return fewer than the limit while more events remain, so only an empty batch
     // means the end. The cursor must move, or it would loop
-    if (!data?.lastid || data.lastid === afterEventId) break;
-    afterEventId = data.lastid;
+    const last = events[events.length - 1];
+    if (last.id === afterEventId && last.timesort === timesortFrom) break;
+    // aftereventid only works together with timesortfrom: Moodle returns events after
+    // timesortfrom, or at it with an id above aftereventid. Both come from the same event
+    timesortFrom = last.timesort;
+    afterEventId = last.id;
   }
 
   return { assignments: [...found.values()].sort((a, b) => a.dueAt - b.dueAt), coveredUntil };

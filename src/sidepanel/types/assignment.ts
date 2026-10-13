@@ -1,7 +1,5 @@
 import type { RawCourse } from "./course";
 
-export type AssignmentModule = "assign" | "questionnaire" | "resource";
-
 // Slimmed-down Moodle calendar action event (core_calendar_get_action_events_by_timesort)
 export type RawAssignmentEvent = {
   id: number;
@@ -17,7 +15,7 @@ export type Assignment = {
   id: number;
   title: string;
   courseName: string;
-  module: AssignmentModule;
+  module: string;
   // Deadline as epoch ms
   dueAt: number;
   link: string;

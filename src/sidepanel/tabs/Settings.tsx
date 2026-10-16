@@ -1,9 +1,11 @@
 import { useState } from "react";
 import MajorPicker from "../components/MajorPicker";
+import useCourses from "../hooks/useCourses";
 import useMajor from "../hooks/useMajor";
 
 export default function Settings() {
   const { major, selectMajor } = useMajor();
+  const { error, isRefreshing, refreshSyllabuses } = useCourses();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const deleteData = async () => {
@@ -35,6 +37,14 @@ export default function Settings() {
           </button>
         </div>
         <p className="m-0 mt-2 text-[13px] text-ink-soft">シラバス検索に使用されます。</p>
+        {isRefreshing && <p className="m-0 mt-2 text-[13px] text-ink-soft">シラバスを検索中...</p>}
+        {error && (
+          <p className="m-0 mt-2 text-[13px] text-alert">
+            {error === "not-on-moodle"
+              ? "講義を取得するにはMoodleを開いてから、もう一度学科を選択してください。"
+              : "講義を取得できませんでした。Moodleにログインしているか確認してください。"}
+          </p>
+        )}
       </section>
 
       <section className="mt-8">
@@ -59,10 +69,11 @@ export default function Settings() {
 
       {isPickerOpen && (
         <MajorPicker
-          selected={major}
-          onSelect={(label) => {
-            selectMajor(label);
+          selected={major ?? null}
+          onSelect={async (label) => {
             setIsPickerOpen(false);
+            await selectMajor(label);
+            await refreshSyllabuses();
           }}
           onClose={() => setIsPickerOpen(false)}
         />

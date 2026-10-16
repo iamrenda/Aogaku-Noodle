@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 
 /**
  * Provides the selected major label from chrome.storage.local (`selectedMajor`).
- * It is null while unset, so "delete saved data" (storage.clear) also clears it.
+ * It is undefined until read and null while unset, so "delete saved data" (storage.clear) also clears it.
  */
 export default function useMajor() {
-  const [major, setMajor] = useState<string | null>(null);
+  const [major, setMajor] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
     chrome.storage.local.get("selectedMajor").then((saved) => {

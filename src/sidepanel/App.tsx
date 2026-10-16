@@ -3,7 +3,6 @@ import TabBar from "./components/TabBar";
 import Assignments from "./tabs/Assignments";
 import Courses from "./tabs/Courses";
 import Settings from "./tabs/Settings";
-import Syllabus from "./tabs/Syllabus";
 import type { TabId } from "./const/tabs";
 
 export default function App() {
@@ -14,7 +13,6 @@ export default function App() {
       <TabBar tab={tab} onChange={setTab} />
       <main id="panel" role="tabpanel">
         {tab === "courses" && <Courses />}
-        {tab === "syllabus" && <Syllabus />}
         {tab === "assignments" && <Assignments />}
         {tab === "settings" && <Settings />}
       </main>

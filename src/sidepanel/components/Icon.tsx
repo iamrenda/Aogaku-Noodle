@@ -1,9 +1,8 @@
-import { MdAssignment, MdDescription, MdMenuBook, MdSettings } from "react-icons/md";
+import { MdAssignment, MdMenuBook, MdSettings } from "react-icons/md";
 import type { TabId } from "../const/tabs";
 
 const ICONS = {
   courses: MdMenuBook,
-  syllabus: MdDescription,
   assignments: MdAssignment,
   settings: MdSettings,
 } satisfies Record<TabId, unknown>;

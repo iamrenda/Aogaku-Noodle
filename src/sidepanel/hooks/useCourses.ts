@@ -1,9 +1,25 @@
 import { useCallback, useEffect, useState } from "react";
 import { NotOnMoodleError } from "../api/callMoodleApi";
 import fetchCourses from "../api/fetchCourses";
+import fetchSyllabuses from "../api/fetchSyllabuses";
 import type { Course } from "../types/course";
 
 export type RefreshError = "not-on-moodle" | "failed";
+
+/**
+ * Saves the syllabus search results. Skipped while no major is selected.
+ * A failure is only logged so it never turns a course refresh into an error.
+ */
+async function searchSyllabuses(courses: Course[]) {
+  const saved = await chrome.storage.local.get("selectedMajor");
+  const major = saved.selectedMajor as string | undefined;
+  if (!major) return;
+  try {
+    await chrome.storage.local.set({ syllabuses: await fetchSyllabuses(courses, major) });
+  } catch (e) {
+    console.warn("Failed to search syllabuses:", e);
+  }
+}
 
 /**
  * Provides saved course list from chrome.storage.local
@@ -32,7 +48,9 @@ export default function useCourses() {
     setIsRefreshing(true);
     setError(null);
     try {
-      await chrome.storage.local.set({ courses: await fetchCourses() });
+      const fetched = await fetchCourses();
+      await chrome.storage.local.set({ courses: fetched });
+      await searchSyllabuses(fetched);
     } catch (e) {
       console.warn("Failed to refresh courses:", e);
       setError(e instanceof NotOnMoodleError ? "not-on-moodle" : "failed");
@@ -41,5 +59,23 @@ export default function useCourses() {
     }
   }, []);
 
-  return { courses, error, isRefreshing, refresh };
+  /**
+   * Searches the syllabuses of the saved courses (after the major is selected).
+   * Fetches the courses first when none are saved.
+   */
+  const refreshSyllabuses = useCallback(async () => {
+    const saved = await chrome.storage.local.get("courses");
+    const savedCourses = (saved.courses as Course[] | undefined) ?? [];
+    if (savedCourses.length === 0) return refresh();
+
+    setIsRefreshing(true);
+    setError(null);
+    try {
+      await searchSyllabuses(savedCourses);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refresh]);
+
+  return { courses, error, isRefreshing, refresh, refreshSyllabuses };
 }

@@ -1,10 +1,13 @@
 import DaySection from "../components/DaySection";
+import SyllabusNotice from "../components/SyllabusNotice";
 import RefreshPrompt from "../components/RefreshPrompt";
 import useCourses from "../hooks/useCourses";
+import useMajor from "../hooks/useMajor";
 import groupCourses from "../utils/groupCourses";
 
 export default function Courses() {
   const { courses, error, isRefreshing, refresh } = useCourses();
+  const { major } = useMajor();
   const today = new Date().getDay();
 
   if (courses === null) return null;
@@ -14,14 +17,17 @@ export default function Courses() {
       {courses.length === 0 ? (
         <RefreshPrompt error={error} isRefreshing={isRefreshing} onRefresh={refresh} />
       ) : (
-        groupCourses(courses).map((section) => (
-          <DaySection
-            key={section.key}
-            title={section.title}
-            courses={section.courses}
-            isToday={section.day === today}
-          />
-        ))
+        <>
+          {major === null && <SyllabusNotice />}
+          {groupCourses(courses).map((section) => (
+            <DaySection
+              key={section.key}
+              title={section.title}
+              courses={section.courses}
+              isToday={section.day === today}
+            />
+          ))}
+        </>
       )}
     </div>
   );

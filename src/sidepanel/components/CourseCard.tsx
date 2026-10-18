@@ -4,6 +4,7 @@ import useMajor from "../hooks/useMajor";
 import useSyllabuses from "../hooks/useSyllabuses";
 import type { Course } from "../types/course";
 import type { Syllabus } from "../types/syllabus";
+import hasSearchableDay from "../utils/hasSearchableDay";
 import SyllabusPicker from "./SyllabusPicker";
 
 export default function CourseCard({ course }: { course: Course }) {
@@ -11,7 +12,8 @@ export default function CourseCard({ course }: { course: Course }) {
   const { syllabuses, choose } = useSyllabuses(course.id);
   const { major } = useMajor();
   // undefined syllabuses = not searched yet, so no icon
-  const showSyllabus = typeof major === "string" && course.day !== null && syllabuses !== undefined;
+  const showSyllabus =
+    typeof major === "string" && hasSearchableDay(course) && syllabuses !== undefined;
   const [isPickerOpen, setIsPickerOpen] = useState(false);
 
   const matchCount = syllabuses?.length ?? 0;

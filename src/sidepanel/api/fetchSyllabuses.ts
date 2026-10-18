@@ -1,6 +1,7 @@
 import { FACULTIES, GENERAL_MAJOR_CODE } from "../const/majors";
 import type { Course } from "../types/course";
 import type { Syllabus, SyllabusMap } from "../types/syllabus";
+import hasSearchableDay from "../utils/hasSearchableDay";
 
 const SYLLABUS_ORIGIN = "https://syllabus.aoyama.ac.jp/";
 
@@ -32,9 +33,7 @@ function buildSearchUrl(course: Course, majorCodes: string[], withLecturer: bool
     PI: "0",
     IP: "on",
   });
-  // The site has weekday checkboxes for Mon-Sat only
-  if (course.day !== null && course.day >= 1 && course.day <= 6)
-    params.set(`YB${course.day}`, "on");
+  if (course.day !== null) params.set(`YB${course.day}`, "on");
   if (course.period !== null) params.set(`JG${course.period}`, "on");
   majorCodes.forEach((code, i) => params.set(`GB1B_${i}`, code));
   return `${SYLLABUS_ORIGIN}?${params}`;
@@ -83,8 +82,8 @@ async function searchCourse(course: Course, majorCodes: string[]): Promise<Sylla
 }
 
 /**
- * Searches the syllabus site for every course with a known weekday.
- * Special courses (no weekday) are skipped; a failed search is saved as no result.
+ * Searches the syllabus site for every course held Monday to Saturday.
+ * Skipped courses get no entry (so no icon); a failed search is saved as no result.
  */
 export default async function fetchSyllabuses(
   courses: Course[],
@@ -94,8 +93,8 @@ export default async function fetchSyllabuses(
 
   const map: SyllabusMap = {};
   for (const course of courses) {
+    if (!hasSearchableDay(course)) continue;
     map[course.id] = [];
-    if (course.day === null) continue;
     try {
       map[course.id] = await searchCourse(course, majorCodes);
     } catch (e) {

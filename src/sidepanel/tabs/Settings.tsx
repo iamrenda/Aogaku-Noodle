@@ -31,7 +31,8 @@ export default function Settings() {
           <button
             type="button"
             onClick={() => setIsPickerOpen(true)}
-            className="cursor-pointer rounded-lg border border-brand bg-brand px-3 py-1.5 text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-brand"
+            disabled={isRefreshing}
+            className="cursor-pointer rounded-lg border border-brand bg-brand px-3 py-1.5 text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-brand disabled:cursor-not-allowed disabled:opacity-60"
           >
             選択する
           </button>
@@ -72,6 +73,8 @@ export default function Settings() {
           selected={major ?? null}
           onSelect={async (label) => {
             setIsPickerOpen(false);
+            // Re-running the search for the same major would wipe the syllabuses the user chose
+            if (label === major) return;
             await selectMajor(label);
             await refreshSyllabuses();
           }}

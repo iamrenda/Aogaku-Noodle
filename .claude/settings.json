@@ -1,4 +1,7 @@
 {
+  "permissions": {
+    "deny": ["EnterWorktree"]
+  },
   "hooks": {
     "PostToolUse": [
       {
@@ -7,6 +10,10 @@
           {
             "type": "command",
             "command": "npm run format"
+          },
+          {
+            "type": "command",
+            "command": "npm run build"
           }
         ]
       }

@@ -1,4 +1,4 @@
-import type { Assignment, AssignmentModule, RawAssignmentEvent } from "../types/assignment";
+import type { Assignment, RawAssignmentEvent } from "../types/assignment";
 import parseCourse from "./parseCourse";
 
 /**
@@ -11,7 +11,7 @@ export default function parseAssignment(raw: RawAssignmentEvent): Assignment {
     id: raw.id,
     title: raw.activityname,
     courseName: parseCourse(raw.course).title,
-    module: raw.modulename as AssignmentModule,
+    module: raw.modulename,
     dueAt: raw.timesort * 1000,
     link: raw.url,
   };

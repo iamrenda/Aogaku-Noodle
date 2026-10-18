@@ -1,18 +1,17 @@
 export type Major = {
   label: string;
-  /** Department codes of the syllabus site search */
+  // Department codes of the syllabus site search
   code: string[];
 };
 
 export type Faculty = {
   faculty: string;
-  /** Colour of the faculty heading */
+  // Colour of the faculty heading
   accent: string;
   majors: Major[];
 };
 
-/** General education, always added to the syllabus search */
-export const GENERAL_MAJOR_CODE = "611020";
+export const AOYAMA_STANDARD_CODE = "611020";
 
 export const FACULTIES: Faculty[] = [
   {

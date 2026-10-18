@@ -1,4 +1,4 @@
-import { FACULTIES, GENERAL_MAJOR_CODE } from "../const/majors";
+import { FACULTIES, AOYAMA_STANDARD_CODE } from "../const/majors";
 import type { Course } from "../types/course";
 import type { Syllabus, SyllabusMap } from "../types/syllabus";
 import hasSearchableDay from "../utils/hasSearchableDay";
@@ -7,7 +7,7 @@ const SYLLABUS_ORIGIN = "https://syllabus.aoyama.ac.jp/";
 
 function getMajorCodes(majorLabel: string): string[] {
   const major = FACULTIES.flatMap((f) => f.majors).find((m) => m.label === majorLabel);
-  return [...(major?.code ?? []), GENERAL_MAJOR_CODE];
+  return [...(major?.code ?? []), AOYAMA_STANDARD_CODE];
 }
 
 /** The academic year starts in April */

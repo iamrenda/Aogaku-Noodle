@@ -1,0 +1,27 @@
+name: Build extension
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # GitHub zips the uploaded folder, so the download is aogaku-noodle.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aogaku-noodle
+          path: dist/
+          if-no-files-found: error

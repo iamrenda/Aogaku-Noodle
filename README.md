@@ -17,6 +17,7 @@
 <img width="1280" height="800" alt="after image" src="https://github.com/user-attachments/assets/eb64e8eb-1a8b-491d-b118-7e6a6777a988" />
 
 ### 課題一覧
+
 - 全講義の課題・小テスト・レポートを締切順に表示
 - 不要な課題は「非表示」にでき、あとから見返すことも可能
 - Moodle のどのページからでもサイドパネルで確認できる
@@ -24,6 +25,7 @@
 <img width="1280" height="800" alt="assignment image" src="https://github.com/user-attachments/assets/c6970d74-c78d-4b82-bcf0-9ba67cec5f86" />
 
 ### シラバス連携
+
 - 学部・学科を選ぶと、各講義のシラバスを大学のシラバスサイトから自動で検索
 - 講義カードのアイコンから、シラバスを直接開ける
 
@@ -59,13 +61,13 @@ Moodle には、すべての課題をまとめて見る場所がほとんどあ�
 
 ### 使用技術
 
-| 分類 | 技術 |
-|---|---|
-| 言語 | TypeScript |
-| UI | React 19 / Tailwind CSS v4 |
-| ビルド | Vite / @crxjs/vite-plugin |
+| 分類     | 技術                               |
+| -------- | ---------------------------------- |
+| 言語     | TypeScript                         |
+| UI       | React 19 / Tailwind CSS v4         |
+| ビルド   | Vite / @crxjs/vite-plugin          |
 | 拡張機能 | Chrome Manifest V3（サイドパネル） |
-| CI/CD | GitHub Actions |
+| CI/CD    | GitHub Actions                     |
 
 ---
 

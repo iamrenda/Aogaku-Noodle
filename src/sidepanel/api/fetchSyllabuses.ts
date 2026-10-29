@@ -88,18 +88,21 @@ async function searchCourse(course: Course, majorCodes: string[]): Promise<Sylla
 export default async function fetchSyllabuses(
   courses: Course[],
   major: string,
+  onProgress?: (fetched: number, total: number) => void,
 ): Promise<SyllabusMap> {
   const majorCodes = getMajorCodes(major);
-
+  const searchable = courses.filter(hasSearchableDay);
   const map: SyllabusMap = {};
-  for (const course of courses) {
-    if (!hasSearchableDay(course)) continue;
+
+  onProgress?.(0, searchable.length);
+  for (const [i, course] of searchable.entries()) {
     map[course.id] = [];
     try {
       map[course.id] = await searchCourse(course, majorCodes);
     } catch (e) {
       console.warn(`Syllabus search failed for ${course.title}:`, e);
     }
+    onProgress?.(i + 1, searchable.length);
   }
   return map;
 }

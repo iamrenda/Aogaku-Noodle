@@ -1,12 +1,22 @@
 import { useState } from "react";
+import CourseSelector from "../components/CourseSelector";
 import MajorPicker from "../components/MajorPicker";
 import useCourses from "../hooks/useCourses";
 import useMajor from "../hooks/useMajor";
 
 export default function Settings() {
   const { major, selectMajor } = useMajor();
-  const { error, isRefreshing, refreshSyllabuses } = useCourses();
+  const { courses, error, isRefreshing, refreshSyllabuses } = useCourses();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const [includedIds, setIncludedIds] = useState<Set<number> | null>(null);
+  const included = includedIds ?? new Set((courses ?? []).map((c) => c.id));
+
+  const toggleCourse = (id: number) => {
+    const next = new Set(included);
+    if (!next.delete(id)) next.add(id);
+    setIncludedIds(next);
+  };
 
   const deleteData = async () => {
     if (
@@ -48,6 +58,29 @@ export default function Settings() {
       </section>
 
       <section className="mt-8">
+        <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-ink">
+          使用する講義
+        </h2>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <span className="text-[14px] font-bold text-ink">
+            {courses?.length
+              ? `${included.size} / ${courses.length}件を使用中`
+              : "講義がありません"}
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsSelectorOpen(true)}
+            className="cursor-pointer rounded-lg border border-brand bg-brand px-3 py-1.5 text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-brand"
+          >
+            選択する
+          </button>
+        </div>
+        <p className="m-0 mt-2 text-[13px] text-ink-soft">
+          選んだ講義が講義タブに表示され、課題の取得対象になります。
+        </p>
+      </section>
+
+      <section className="mt-8">
         <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-alert">
           データの削除
         </h2>
@@ -66,6 +99,15 @@ export default function Settings() {
       <p className="m-0 mt-auto pt-8 text-center text-xs text-ink-soft">
         この拡張機能は非公式です。@iamrenda が制作しました。
       </p>
+
+      {isSelectorOpen && (
+        <CourseSelector
+          courses={courses ?? []}
+          included={included}
+          onToggle={toggleCourse}
+          onClose={() => setIsSelectorOpen(false)}
+        />
+      )}
 
       {isPickerOpen && (
         <MajorPicker

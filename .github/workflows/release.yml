@@ -2,7 +2,7 @@ name: Release extension
 
 on:
   push:
-    tags: ['v*']
+    tags: ["v*"]
 
 # Needed to create the GitHub Release
 permissions:

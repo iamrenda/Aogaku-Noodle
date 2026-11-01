@@ -38,7 +38,6 @@ export default function Settings() {
           </button>
         </div>
         <p className="m-0 mt-2 text-[13px] text-ink-soft">シラバス検索に使用されます。</p>
-        {isRefreshing && <p className="m-0 mt-2 text-[13px] text-ink-soft">シラバスを検索中...</p>}
         {error && (
           <p className="m-0 mt-2 text-[13px] text-alert">
             {error === "not-on-moodle"

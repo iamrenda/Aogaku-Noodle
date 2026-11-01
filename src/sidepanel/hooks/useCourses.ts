@@ -3,6 +3,7 @@ import { NotOnMoodleError } from "../api/callMoodleApi";
 import fetchCourses from "../api/fetchCourses";
 import fetchSyllabuses from "../api/fetchSyllabuses";
 import type { Course } from "../types/course";
+import useSyllabusProgress from "./useSyllabusProgress";
 
 export type RefreshError = "not-on-moodle" | "failed";
 
@@ -13,11 +14,18 @@ export type RefreshError = "not-on-moodle" | "failed";
 async function searchSyllabuses(courses: Course[]) {
   const saved = await chrome.storage.local.get("selectedMajor");
   const major = saved.selectedMajor as string | undefined;
+
   if (!major) return;
+
   try {
-    await chrome.storage.local.set({ syllabuses: await fetchSyllabuses(courses, major) });
+    const syllabuses = await fetchSyllabuses(courses, major, (fetched, total) =>
+      useSyllabusProgress.getState().setProgress({ fetched, total }),
+    );
+    await chrome.storage.local.set({ syllabuses });
   } catch (e) {
     console.warn("Failed to search syllabuses:", e);
+  } finally {
+    useSyllabusProgress.getState().setProgress(null);
   }
 }
 

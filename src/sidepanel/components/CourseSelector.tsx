@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { MdClose } from "react-icons/md";
-import type { Course } from "../types/course";
 import { MdRefresh } from "react-icons/md";
+import type { RefreshError } from "../hooks/useCourses";
+import type { Course } from "../types/course";
 import CourseSelectSection from "./CourseSelectItem";
 
 type Props = {
@@ -9,13 +10,24 @@ type Props = {
   included: Set<number>;
   onToggle: (id: number) => void;
   onClose: () => void;
+  onRefresh: () => void;
+  isRefreshing: boolean;
+  error: RefreshError | null;
 };
 
 /**
  * Bottom sheet to choose which courses are used (講義 tab and 課題 fetching).
  * Two plain lists (進行中 / その他), no weekday grouping.
  */
-export default function CourseSelector({ courses, included, onToggle, onClose }: Props) {
+export default function CourseSelector({
+  courses,
+  included,
+  onToggle,
+  onClose,
+  onRefresh,
+  isRefreshing,
+  error,
+}: Props) {
   const inProgress = courses.filter((c) => c.isInProgress !== false);
   const others = courses.filter((c) => c.isInProgress === false);
 
@@ -52,12 +64,21 @@ export default function CourseSelector({ courses, included, onToggle, onClose }:
           </p>
           <button
             type="button"
-            className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-brand bg-white px-2.5 py-1 text-[12px] font-bold text-brand hover:bg-brand hover:text-white"
+            onClick={onRefresh}
+            disabled={isRefreshing}
+            className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-brand bg-white px-2.5 py-1 text-[12px] font-bold text-brand hover:bg-brand hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
           >
             <MdRefresh size={16} aria-hidden="true" />
-            更新
+            {isRefreshing ? "取得中..." : "更新"}
           </button>
         </div>
+        {error && (
+          <p className="m-0 px-4 pt-2 text-[12px] text-alert">
+            {error === "not-on-moodle"
+              ? "Moodleを開いてから、もう一度更新してください。"
+              : "講義を取得できませんでした。Moodleにログインしているか確認してください。"}
+          </p>
+        )}
 
         <div className="overflow-y-auto px-4 pb-4">
           <CourseSelectSection

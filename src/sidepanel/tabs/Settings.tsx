@@ -1,22 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CourseSelector from "../components/CourseSelector";
 import MajorPicker from "../components/MajorPicker";
 import useCourses from "../hooks/useCourses";
+import useCourseSelection from "../hooks/useCourseSelection";
 import useMajor from "../hooks/useMajor";
 
 export default function Settings() {
   const { major, selectMajor } = useMajor();
-  const { courses, error, isRefreshing, refreshSyllabuses } = useCourses();
+  const { error, isRefreshing, refreshSyllabuses } = useCourses();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
-  const [includedIds, setIncludedIds] = useState<Set<number> | null>(null);
-  const included = includedIds ?? new Set((courses ?? []).map((c) => c.id));
+  const selection = useCourseSelection();
+  const included = new Set(selection.includedIds);
+  const allCount = selection.allCourses?.length ?? 0;
+  const includedCount = (selection.allCourses ?? []).filter((c) => included.has(c.id)).length;
+  const { searchAddedSyllabuses } = selection;
 
-  const toggleCourse = (id: number) => {
-    const next = new Set(included);
-    if (!next.delete(id)) next.add(id);
-    setIncludedIds(next);
-  };
+  // Runs when the popup closes, and when the tab is left with the popup open
+  useEffect(() => {
+    if (!isSelectorOpen) return;
+    return () => {
+      searchAddedSyllabuses();
+    };
+  }, [isSelectorOpen, searchAddedSyllabuses]);
 
   const deleteData = async () => {
     if (
@@ -30,7 +36,6 @@ export default function Settings() {
   };
 
   return (
-    // 80px is the height of the sticky tab bar
     <div className="flex min-h-[calc(100vh-80px)] flex-col bg-white px-4 pt-2 pb-6">
       <section>
         <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-ink">学科設定</h2>
@@ -63,9 +68,7 @@ export default function Settings() {
         </h2>
         <div className="mt-3 flex items-center justify-between gap-3">
           <span className="text-[14px] font-bold text-ink">
-            {courses?.length
-              ? `${included.size} / ${courses.length}件を使用中`
-              : "講義がありません"}
+            {allCount > 0 ? `${includedCount} / ${allCount}件を使用中` : "講義がありません"}
           </span>
           <button
             type="button"
@@ -102,10 +105,13 @@ export default function Settings() {
 
       {isSelectorOpen && (
         <CourseSelector
-          courses={courses ?? []}
+          courses={selection.allCourses ?? []}
           included={included}
-          onToggle={toggleCourse}
+          onToggle={selection.toggle}
           onClose={() => setIsSelectorOpen(false)}
+          onRefresh={selection.refreshAll}
+          isRefreshing={selection.isRefreshing}
+          error={selection.error}
         />
       )}
 

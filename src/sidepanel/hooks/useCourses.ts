@@ -3,15 +3,23 @@ import { NotOnMoodleError } from "../api/callMoodleApi";
 import fetchCourses from "../api/fetchCourses";
 import fetchSyllabuses from "../api/fetchSyllabuses";
 import type { Course } from "../types/course";
+import mergeCourseSelection from "../utils/mergeCourseSelection";
+import {
+  enqueueSelectionWrite,
+  readSelection,
+  saveSelection,
+  saveSyllabuses,
+} from "../utils/selectionStore";
 import useSyllabusProgress from "./useSyllabusProgress";
 
 export type RefreshError = "not-on-moodle" | "failed";
 
 /**
  * Saves the syllabus search results. Skipped while no major is selected.
+ * `merge` keeps the results of other courses (used when only some courses are searched).
  * A failure is only logged so it never turns a course refresh into an error.
  */
-async function searchSyllabuses(courses: Course[]) {
+export async function searchSyllabuses(courses: Course[], merge = false) {
   const saved = await chrome.storage.local.get("selectedMajor");
   const major = saved.selectedMajor as string | undefined;
 
@@ -21,7 +29,7 @@ async function searchSyllabuses(courses: Course[]) {
     const syllabuses = await fetchSyllabuses(courses, major, (fetched, total) =>
       useSyllabusProgress.getState().setProgress({ fetched, total }),
     );
-    await chrome.storage.local.set({ syllabuses });
+    await saveSyllabuses(syllabuses, merge);
   } catch (e) {
     console.warn("Failed to search syllabuses:", e);
   } finally {
@@ -57,8 +65,15 @@ export default function useCourses() {
     setError(null);
     try {
       const fetched = await fetchCourses();
-      await chrome.storage.local.set({ courses: fetched });
-      await searchSyllabuses(fetched);
+      const inProgressIds = new Set(fetched.map((c) => c.id));
+      // Merged with the saved selection (not overwritten), inside the queue shared with toggling
+      const selected = await enqueueSelectionWrite(async () => {
+        const merged = mergeCourseSelection(await readSelection(), fetched, inProgressIds);
+        await saveSelection(merged.allCourses, merged.includedIds);
+        const included = new Set(merged.includedIds);
+        return merged.allCourses.filter((c) => included.has(c.id));
+      });
+      await searchSyllabuses(selected);
     } catch (e) {
       console.warn("Failed to refresh courses:", e);
       setError(e instanceof NotOnMoodleError ? "not-on-moodle" : "failed");
@@ -69,12 +84,16 @@ export default function useCourses() {
 
   /**
    * Searches the syllabuses of the saved courses (after the major is selected).
-   * Fetches the courses first when none are saved.
+   * Fetches the courses first when none were ever saved.
    */
   const refreshSyllabuses = useCallback(async () => {
-    const saved = await chrome.storage.local.get("courses");
+    const saved = await chrome.storage.local.get(["courses", "allCourses"]);
     const savedCourses = (saved.courses as Course[] | undefined) ?? [];
-    if (savedCourses.length === 0) return refresh();
+    const hasAnyCourse = ((saved.allCourses as Course[] | undefined)?.length ?? 0) > 0;
+    if (savedCourses.length === 0) {
+      // Fetch only when nothing was ever fetched. If all were deselected there is nothing to search
+      return hasAnyCourse ? undefined : refresh();
+    }
 
     setIsRefreshing(true);
     setError(null);

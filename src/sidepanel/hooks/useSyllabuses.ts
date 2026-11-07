@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Syllabus, SyllabusMap } from "../types/syllabus";
+import { saveSyllabuses } from "../utils/selectionStore";
 
 /**
  * Provides the saved syllabus search result of one course (chrome.storage.local `syllabuses`).
@@ -22,12 +23,10 @@ export default function useSyllabuses(courseId: number) {
     return () => chrome.storage.onChanged.removeListener(onChanged);
   }, [courseId]);
 
-  /** Resolves a conflict by keeping only the chosen syllabus */
+  // Resolves a conflict by keeping only the chosen syllabus
   const choose = useCallback(
     async (syllabus: Syllabus) => {
-      const saved = await chrome.storage.local.get("syllabuses");
-      const map = (saved.syllabuses as SyllabusMap | undefined) ?? {};
-      await chrome.storage.local.set({ syllabuses: { ...map, [courseId]: [syllabus] } });
+      await saveSyllabuses({ [courseId]: [syllabus] }, true);
     },
     [courseId],
   );

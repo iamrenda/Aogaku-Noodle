@@ -15,4 +15,5 @@ export type Course = {
   isOnline: boolean;
   category: string;
   link: string;
+  isInProgress?: boolean;
 };

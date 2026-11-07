@@ -1,12 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import CourseSelector from "../components/CourseSelector";
 import MajorPicker from "../components/MajorPicker";
 import useCourses from "../hooks/useCourses";
+import useCourseSelection from "../hooks/useCourseSelection";
 import useMajor from "../hooks/useMajor";
 
 export default function Settings() {
   const { major, selectMajor } = useMajor();
   const { error, isRefreshing, refreshSyllabuses } = useCourses();
   const [isPickerOpen, setIsPickerOpen] = useState(false);
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const selection = useCourseSelection();
+  const included = new Set(selection.includedIds);
+  const allCount = selection.allCourses?.length ?? 0;
+  const includedCount = (selection.allCourses ?? []).filter((c) => included.has(c.id)).length;
+  const { searchAddedSyllabuses } = selection;
+
+  // Runs when the popup closes, and when the tab is left with the popup open
+  useEffect(() => {
+    if (!isSelectorOpen) return;
+    return () => {
+      searchAddedSyllabuses();
+    };
+  }, [isSelectorOpen, searchAddedSyllabuses]);
 
   const deleteData = async () => {
     if (
@@ -20,7 +36,6 @@ export default function Settings() {
   };
 
   return (
-    // 80px is the height of the sticky tab bar
     <div className="flex min-h-[calc(100vh-80px)] flex-col bg-white px-4 pt-2 pb-6">
       <section>
         <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-ink">学科設定</h2>
@@ -48,6 +63,27 @@ export default function Settings() {
       </section>
 
       <section className="mt-8">
+        <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-ink">
+          使用する講義
+        </h2>
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <span className="text-[14px] font-bold text-ink">
+            {allCount > 0 ? `${includedCount} / ${allCount}件を使用中` : "講義がありません"}
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsSelectorOpen(true)}
+            className="cursor-pointer rounded-lg border border-brand bg-brand px-3 py-1.5 text-[13px] font-bold text-white transition-colors hover:bg-white hover:text-brand"
+          >
+            選択する
+          </button>
+        </div>
+        <p className="m-0 mt-2 text-[13px] text-ink-soft">
+          選んだ講義が講義タブに表示され、課題の取得対象になります。
+        </p>
+      </section>
+
+      <section className="mt-8">
         <h2 className="m-0 border-b border-rule pb-1.5 text-[15px] font-bold text-alert">
           データの削除
         </h2>
@@ -66,6 +102,18 @@ export default function Settings() {
       <p className="m-0 mt-auto pt-8 text-center text-xs text-ink-soft">
         この拡張機能は非公式です。@iamrenda が制作しました。
       </p>
+
+      {isSelectorOpen && (
+        <CourseSelector
+          courses={selection.allCourses ?? []}
+          included={included}
+          onToggle={selection.toggle}
+          onClose={() => setIsSelectorOpen(false)}
+          onRefresh={selection.refreshAll}
+          isRefreshing={selection.isRefreshing}
+          error={selection.error}
+        />
+      )}
 
       {isPickerOpen && (
         <MajorPicker
